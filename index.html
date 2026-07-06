@@ -5351,6 +5351,48 @@ function calOpenTimePicker(kind, idOrIdx, field, currentVal){
    - Only tasks flagged autoBacklogPlanned=true are wiped/regenerated; user's
      manual tasks are preserved.
 ═══════════════════════════════════ */
+/* v14 — Compute minutes blocked by EXISTING (non-auto-backlog) Daily Plan tasks for a specific date.
+   Used during replanning so backlog auto-planning respects already-planned manual tasks. */
+function buildExistingDailyPlanBlockedMinutes(dateStr, bounds){
+  const blocked = new Set();
+  try {
+    const tasks = dpGetTasks(dateStr);
+    tasks.forEach(t => {
+      if(t.autoBacklogPlanned) return; // These will be wiped, so ignore
+      const from = parseTimeToMinutes(t.fromTime);
+      if(from === null) return;
+      let end = parseTimeToMinutes(t.toTime);
+      if(end === null || end <= from){
+        // Fallback: derive end from expected hours
+        const hrs = (typeof dpGetTaskHours === 'function') ? dpGetTaskHours(t) : 0.5;
+        end = from + Math.max(30, Math.round(hrs * 60));
+      }
+      for(let minute = from; minute < end && minute < bounds.maxMinute; minute += DAILY_SLOT_MINUTES){
+        const slot = Math.floor(minute / DAILY_SLOT_MINUTES) * DAILY_SLOT_MINUTES;
+        if(slot >= bounds.minMinute) blocked.add(slot);
+      }
+    });
+  } catch(e){ console.error('buildExistingDailyPlanBlockedMinutes', e); }
+  return blocked;
+}
+/* v14 — Total hours already consumed by existing (non-auto-backlog) Daily Plan tasks on a date. */
+function computeExistingPlannedHours(dateStr){
+  try {
+    const tasks = dpGetTasks(dateStr);
+    let total = 0;
+    tasks.forEach(t => {
+      if(t.autoBacklogPlanned) return;
+      const from = parseTimeToMinutes(t.fromTime);
+      const to = parseTimeToMinutes(t.toTime);
+      if(from !== null && to !== null && to > from){
+        total += (to - from) / 60;
+      } else if(typeof dpGetTaskHours === 'function'){
+        total += (dpGetTaskHours(t) || 0);
+      }
+    });
+    return total;
+  } catch(e){ return 0; }
+}
 function minutesToHHMM(mins){
   const h = Math.floor(mins/60), m = mins%60;
   return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
@@ -5415,13 +5457,22 @@ function refreshPlanFromBacklogs(){
     let plannedCount = 0;
 
     plan.days.forEach((day)=>{
+      // v14 — Reduce day.net by hours already consumed by existing (non-auto-backlog) Daily Plan tasks
+      const existingHours = computeExistingPlannedHours(day.date);
+      day.existingPlannedHours = Math.round(existingHours * 100) / 100;
+      day.net = Math.max(0, Math.round((day.net - existingHours) * 100) / 100);
       if(day.isPast || day.net<=0){
         day.sessions = [];
-        day.note = day.net<=0 ? 'No study time available' : 'Past day';
+        day.note = day.net<=0
+          ? (existingHours>0 ? ('No free time — '+day.existingPlannedHours+'h already planned') : 'No study time available')
+          : 'Past day';
         return;
       }
       const bounds = getTimelineBounds(day.date);
-      const blocked = buildBlockedMinuteSet(day.date, bounds);
+      // v14 — Merge calendar-blocked minutes with minutes occupied by existing manual/goal tasks
+      const calendarBlocked = buildBlockedMinuteSet(day.date, bounds);
+      const existingBlocked = buildExistingDailyPlanBlockedMinutes(day.date, bounds);
+      const blocked = new Set([...calendarBlocked, ...existingBlocked]);
       const allMinutes = buildTimelineMinuteList(bounds);
       const occupied = {};
       const sessions = [];
@@ -5519,9 +5570,10 @@ function refreshPlanFromBacklogs(){
 
       day.sessions = sessions;
       const uniqueTopics = new Set(sessions.map(s=>s._splitOfTopicKey));
+      const existingSuffix = (day.existingPlannedHours>0) ? (' · '+day.existingPlannedHours+'h reserved for existing tasks') : '';
       day.note = sessions.length
-        ? (uniqueTopics.size+' topic'+(uniqueTopics.size>1?'s':'')+' · '+sessions.length+' block'+(sessions.length>1?'s':''))
-        : 'Rest — no backlogs assigned';
+        ? (uniqueTopics.size+' topic'+(uniqueTopics.size>1?'s':'')+' · '+sessions.length+' block'+(sessions.length>1?'s':'')+existingSuffix)
+        : ('Rest — no backlogs assigned'+existingSuffix);
     });
 
     // 7. Post-process: patch "Part N" labels to include total parts (Part 1 of 3)
