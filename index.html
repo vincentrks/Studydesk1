@@ -486,7 +486,16 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .goal-detail-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}
 .goal-list-empty{padding:26px;text-align:center;border:1px dashed var(--border2);border-radius:14px;background:var(--surface);color:var(--text3)}
 .goal-topic-grid-7{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.goal-grid-head-7,.goal-grid-row-7{display:grid;grid-template-columns:80px 170px 1fr 94px 88px 32px;gap:0;align-items:center}
+.goal-grid-head-7,.goal-grid-row-7{display:grid;grid-template-columns:80px 170px 1fr 94px 88px 130px 32px;gap:0;align-items:center}
+.goal-status-select{width:100%;border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);cursor:pointer}
+.goal-status-select:focus{outline:none;border-color:var(--accent)}
+.goal-status-select.status-completed{background:var(--done-l);color:var(--done);border-color:var(--done-l)}
+.goal-status-select.status-in-progress{background:var(--prog-l);color:var(--prog);border-color:#BBD0EA}
+.goal-status-select.status-yet-to-start{background:var(--surface2);color:var(--text2)}
+.goal-status-badge-ro{display:inline-flex;align-items:center;justify-content:center;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600;border:1px solid transparent;cursor:default;user-select:none;white-space:nowrap}
+.goal-status-badge-ro.status-completed{background:var(--done-l);color:var(--done);border-color:#8DC6A8}
+.goal-status-badge-ro.status-in-progress{background:var(--prog-l);color:var(--prog);border-color:#BBD0EA}
+.goal-status-badge-ro.status-yet-to-start{background:var(--surface2);color:var(--text2);border-color:var(--border)}
 .goal-grid-head-7{padding:7px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
 .goal-grid-head-7 span{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
 .goal-grid-row-7{padding:9px 14px;border-bottom:1px solid var(--border);background:var(--surface)}
@@ -503,8 +512,10 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 @media (max-width: 900px){
   .goal-list-card-inner,.goal-detail-grid{grid-template-columns:1fr 1fr}
   .goal-list-card-inner > .goal-list-cell,.goal-detail-grid > .goal-list-cell{min-width:0}
-  .goal-grid-head-7,.goal-grid-row-7{grid-template-columns:88px 1fr 90px 32px}
+  .goal-grid-head-7,.goal-grid-row-7{grid-template-columns:88px 1fr 100px 90px 32px}
   .goal-grid-head-7 span:nth-child(2),.goal-grid-row-7 .ggr-chapter{display:none}
+  .goal-grid-head-7 span:nth-child(4),.goal-grid-row-7 .ggr-hours-cell{display:none}
+  .goal-grid-head-7 span:nth-child(5),.goal-grid-row-7 .ggr-pct{display:none}
 }
 
 .goal-item-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
@@ -585,6 +596,65 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .cloud-sync-status.warn{color:var(--warn)}
 .cloud-sync-status.err{color:var(--high)}
 
+
+/* ── DAILY LOG FLEXIBLE TASK LIST (no time slots) ── */
+.daily-add-task-btn{margin-left:auto;padding:6px 14px;font-size:12px;white-space:nowrap}
+.daily-list-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.daily-list-head{display:grid;grid-template-columns:28px 1fr 120px 82px;gap:10px;align-items:center;background:var(--surface2);border-bottom:1px solid var(--border);padding:9px 14px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.daily-list-row{display:grid;grid-template-columns:28px 1fr 120px 82px;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--surface)}
+.daily-list-row:last-child{border-bottom:none}
+.daily-list-row.done{background:var(--done-l)}
+.daily-list-row.done .daily-list-title{text-decoration:line-through;color:var(--done)}
+.daily-list-check{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.daily-list-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.35}
+.daily-list-sub{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.35}
+.daily-list-status{font-size:11px;color:var(--text2)}
+.daily-list-actions{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+.daily-list-remove{font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif}
+.daily-list-remove:hover{color:var(--high);border-color:var(--high);background:var(--high-l)}
+.daily-manual-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.daily-manual-row.one{grid-template-columns:1fr}
+.daily-manual-field{display:flex;flex-direction:column;gap:5px}
+.daily-manual-field label{font-size:11px;color:var(--text2);font-weight:500}
+.daily-manual-field select,.daily-manual-field input{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--text);width:100%}
+.daily-manual-field select:focus,.daily-manual-field input:focus{outline:none;border-color:var(--accent)}
+.daily-manual-help{font-size:11px;color:var(--text3);line-height:1.45;margin-top:-4px;margin-bottom:12px}
+.daily-manual-chipline{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.daily-manual-chip{font-size:10px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:3px 8px}
+@media (max-width: 700px){
+  .daily-list-head{display:none}
+  .daily-list-row{grid-template-columns:24px 1fr;gap:8px}
+  .daily-list-status,.daily-list-actions{grid-column:2;justify-content:flex-start}
+  .daily-manual-row{grid-template-columns:1fr}
+}
+
+
+/* ── CLOCK TIME PICKER ── */
+.tp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.tp-box{background:var(--surface);border-radius:14px;width:100%;max-width:320px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.tp-header{text-align:center;margin-bottom:12px}
+.tp-display{display:inline-flex;align-items:center;gap:2px;line-height:1}
+.tp-unit-btn{background:none;border:none;padding:2px 6px;font-family:'Fraunces',serif;font-size:38px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;line-height:1}
+.tp-unit-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tp-sep{font-family:'Fraunces',serif;font-size:36px;color:var(--text3)}
+.tp-ampm-row{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.tp-ampm-btn{padding:5px 14px;font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:100px;background:var(--surface);cursor:pointer;color:var(--text2);font-family:'DM Sans',sans-serif}
+.tp-ampm-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tp-clock{position:relative;width:260px;height:260px;margin:14px auto 12px;border-radius:50%;background:var(--surface2);border:1px solid var(--border)}
+.tp-center{position:absolute;top:50%;left:50%;width:8px;height:8px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);z-index:2;pointer-events:none}
+.tp-hand{position:absolute;top:50%;left:50%;height:2px;background:var(--accent);transform-origin:0 50%;z-index:1;pointer-events:none;transition:transform .2s ease;border-radius:2px}
+.tp-hand-tip{position:absolute;right:-14px;top:-13px;width:28px;height:28px;border-radius:50%;background:var(--accent);opacity:.25}
+.tp-num{position:absolute;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;transform:translate(-50%,-50%);user-select:none;z-index:3;transition:background .15s}
+.tp-num:hover{background:var(--surface3)}
+.tp-num.selected{background:var(--accent);color:#fff;font-weight:600}
+.tp-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
+.tp-btn{border:none;background:transparent;color:var(--accent);padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;text-transform:uppercase;letter-spacing:.05em}
+.tp-btn:hover{background:var(--accent-light)}
+.tp-btn-cancel{color:var(--text2)}
+.tp-btn-cancel:hover{background:var(--surface2)}
+.tp-trigger{border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);cursor:pointer;text-align:center;font-weight:500;transition:all .15s;line-height:1.3}
+.tp-trigger:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.tp-trigger.tp-empty{color:var(--text3);font-weight:400;font-style:italic}
 </style>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -602,8 +672,9 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 
   <div class="sb-section">
     <div class="sb-section-label">Overview</div>
-<button class="sb-btn" onclick="nav('dayview')"><span>◷</span> Daily Log</button>
+<button class="sb-btn" onclick="nav('dailyplan')"><span>☑</span> Daily Plan</button>
 <button class="sb-btn" onclick="nav('weekly')"><span>▦</span> Weekly Plan</button>
+<button class="sb-btn" onclick="nav('calendar')"><span>📅</span> Calendar</button>
 <button class="sb-btn" onclick="nav('backlogs')"><span>☷</span> Backlogs</button>
   </div>
 
@@ -648,34 +719,47 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 <!-- MAIN -->
 <main class="main" id="main-content">
 
-<!-- ═══════════ DAILY LOG ═══════════ -->
-<div id="page-dayview" class="hidden">
+<!-- ═══════════ DAILY PLAN ═══════════ -->
+<div id="page-dailyplan" class="hidden">
   <div class="ph">
-    <div><div class="ph-title">Daily Study Log</div><div class="ph-sub">Day schedule from weekly plan + drag-and-drop daily arrangement</div></div>
+    <div><div class="ph-title">Daily Plan</div><div class="ph-sub">Plan tasks from Subjects or Goals for a specific day. Set a time range and track % completion.</div></div>
   </div>
   <div class="day-header">
     <div class="day-nav">
-      <button class="day-nav-btn" onclick="shiftDay(-1)">← Prev</button>
-      <input type="date" class="day-date-input" id="day-picker" onchange="renderDayView()">
-      <button class="day-nav-btn" onclick="shiftDay(1)">Next →</button>
+      <button class="day-nav-btn" onclick="dpShiftDay(-1)">← Prev</button>
+      <input type="date" class="day-date-input" id="dp-picker" onchange="renderDailyPlan()">
+      <button class="day-nav-btn" onclick="dpShiftDay(1)">Next →</button>
     </div>
-    <div id="day-total-label" style="font-size:12px;color:var(--text2);margin-left:8px"></div>
+    <div id="dp-total-label" style="font-size:12px;color:var(--text2);margin-left:8px"></div>
+    <button class="btn-s daily-add-task-btn" style="margin-left:auto" onclick="nav('calendar')" title="Open Calendar to manage regular and ad-hoc commitments">📅 Calendar</button>
+    <button class="btn-s daily-add-task-btn" style="margin-left:0" onclick="refreshPlanFromBacklogs()" title="Auto-plan backlogs into upcoming days">⟳ Auto-Plan Backlogs</button>
+    <button class="btn-p daily-add-task-btn" style="margin-left:0" onclick="openDailyPlanTaskModal()">+ Add Task</button>
   </div>
-  <div id="day-log-list"></div>
+  <div id="dp-plan-list"></div>
 </div>
-
 <!-- ═══════════ WEEKLY PLAN ═══════════ -->
 <div id="page-weekly" class="hidden">
   <div class="ph">
     <div><div class="ph-title">Weekly Planner</div><div class="ph-sub">Always shows current date + next 6 days. Use Prev Week to view the previous 7 days.</div></div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn-s" style="font-size:12px" onclick="nav('calendar')" title="Open Calendar to manage regular and ad-hoc commitments">📅 Calendar</button>
       <button class="btn-s" style="font-size:12px" onclick="openSettingsModal()">⚙ Hours & Commitments</button>
-      <button class="btn-p" id="refresh-plan-btn" onclick="refreshCurrentWeekPlan()">⟳ Refresh Plan</button>
+      <button class="btn-p" id="refresh-plan-btn" onclick="refreshPlanFromBacklogs()" title="Auto-plan backlogs into upcoming days based on free calendar hours">⟳ Refresh Plan</button>
     </div>
   </div>
   <div id="weekly-plan-output"></div>
 </div>
 
+<!-- ═══════════ CALENDAR ═══════════ -->
+<div id="page-calendar" class="hidden">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Calendar</div>
+      <div class="ph-sub">Manage regular weekly commitments (school, tuition, sleep, food, etc.) and ad-hoc commitments for specific dates.</div>
+    </div>
+  </div>
+  <div id="calendar-content"></div>
+</div>
 <!-- ═══════════ BACKLOGS ═══════════ -->
 <div id="page-backlogs" class="hidden">
   <div class="ph">
@@ -800,7 +884,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 <div id="page-subject" class="hidden">
   <div class="ph">
     <div style="display:flex;align-items:center;gap:12px">
-      <button class="btn-s" style="padding:5px 12px;font-size:12px" onclick="nav('dayview')">← Back</button>
+      <button class="btn-s" style="padding:5px 12px;font-size:12px" onclick="nav('dailyplan')">← Back</button>
       <div>
         <div class="ph-title" id="subj-page-title"></div>
         <div class="ph-sub" id="subj-page-sub"></div>
@@ -897,7 +981,8 @@ function gdriveRelevantKey(key){
   if(!key || key.indexOf('gdrive-')===0) return false;
   return [
     'studydesk-v2','studydesk-goals','active-goal-dash','active-goal-planner','wp-state',
-    'studydesk-week-plan-cache-v2','studydesk-day-layout-v1','weekly-view-offset'
+    'studydesk-week-plan-cache-v2','studydesk-day-layout-v1','weekly-view-offset',
+    'studydesk-adhoc-v1','studydesk-daily-plan-v1'
   ].includes(key);
 }
 window.gdriveMaybeAutoSync = function(key){
@@ -977,7 +1062,7 @@ async function gdriveFindDataFile(){
   return data.files && data.files.length ? data.files[0] : null;
 }
 function gdriveCollectAppData(){
-  const keys=['studydesk-v2','studydesk-goals','active-goal-dash','active-goal-planner','wp-state','studydesk-week-plan-cache-v2','studydesk-day-layout-v1','weekly-view-offset'];
+  const keys=['studydesk-v2','studydesk-goals','active-goal-dash','active-goal-planner','wp-state','studydesk-week-plan-cache-v2','studydesk-day-layout-v1','weekly-view-offset','studydesk-adhoc-v1','studydesk-daily-plan-v1'];
   const localStorageDump={};
   keys.forEach(k=>{ const v=safeLS.getItem(k); if(v!==null && v!==undefined) localStorageDump[k]=v; });
   return {
@@ -993,7 +1078,7 @@ function gdriveApplyAppData(data){
   Object.keys(data.localStorage).forEach(k=>safeLS.setItem(k, data.localStorage[k]));
   window.gdriveSyncMuted=false;
   loadState();
-  try{ nav(curPage || 'dayview'); }catch(e){ nav('dayview'); }
+  try{ nav(curPage || 'dailyplan'); }catch(e){ nav('dailyplan'); }
   gdriveSetStatus('Loaded from Google Drive: '+new Date().toLocaleString('en-IN'), 'ok');
 }
 function gdriveMultipartBody(metadata, jsonText){
@@ -1158,6 +1243,7 @@ function normalizeGoal(g){
   if(!goal.scope) goal.scope={};
   if(!goal.scopeHours) goal.scopeHours={};
   goal.scopeHours=buildGoalScopeHours(goal.scope, goal.scopeHours);
+  if(!goal.topicStatus) goal.topicStatus={};
   goal.mockTest=!!goal.mockTest;
   goal.revisionCount=Math.max(0, parseInt(goal.revisionCount||0,10)||0);
   return goal;
@@ -1607,11 +1693,11 @@ function setSpecialTaskPct(taskKey,pct){
 /* ═══════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════ */
-let curPage='dayview';
+let curPage='dailyplan';
 let curSubject='physics';
 let curFilter='all';
 
-const PAGES=['dayview','weekly','backlogs','goals','tasks','subject'];
+const PAGES=['dailyplan','weekly','calendar','backlogs','goals','tasks','subject'];
 const SUBJ_PAGES=['physics','chemistry','maths'];
 
 function nav(page){
@@ -1625,10 +1711,10 @@ function nav(page){
     if(btn) btn.classList.add('active');
   };
 
-  if(page==='dayview'){
-    document.getElementById('page-dayview').classList.remove('hidden');
-    activateBtn('dayview');
-    initDayView();
+  if(page==='dailyplan'){
+    document.getElementById('page-dailyplan').classList.remove('hidden');
+    activateBtn('dailyplan');
+    initDailyPlan();
   } else if(page==='weekly'){
     persistActiveGoalIfDirty();
     document.getElementById('page-weekly').classList.remove('hidden');
@@ -1638,6 +1724,10 @@ function nav(page){
     document.getElementById('page-backlogs').classList.remove('hidden');
     activateBtn('backlogs');
     renderBacklogsPage();
+  } else if(page==='calendar'){
+    document.getElementById('page-calendar').classList.remove('hidden');
+    activateBtn('calendar');
+    renderCalendarPage();
   } else if(page==='physics'){
     curSubject='physics';
     document.getElementById('page-subject').classList.remove('hidden');
@@ -1664,9 +1754,9 @@ function nav(page){
     renderGoalsPage();
   } else {
     // fallback
-    document.getElementById('page-dayview').classList.remove('hidden');
-    activateBtn('dayview');
-    initDayView();
+    document.getElementById('page-dailyplan').classList.remove('hidden');
+    activateBtn('dailyplan');
+    initDailyPlan();
   }
 }
 
@@ -1793,6 +1883,16 @@ function buildBlockedMinuteSet(dateStr,bounds){
       if(minute>=bounds.minMinute && minute<bounds.maxMinute) blocked.add(minute);
     }
   });
+  // Ad-hoc commitments for this specific date
+  getAdhocForDate(dateStr).forEach(c=>{
+    const from=parseTimeToMinutes(c.from);
+    const durSlots=Math.max(1, Math.round((getCommitmentDurationHours(c)*60)/DAILY_SLOT_MINUTES));
+    if(from===null) return;
+    for(let i=0;i<durSlots;i++){
+      const minute=from + i*DAILY_SLOT_MINUTES;
+      if(minute>=bounds.minMinute && minute<bounds.maxMinute) blocked.add(minute);
+    }
+  });
   return blocked;
 }
 function buildTimelineMinuteList(bounds){
@@ -1899,109 +1999,6 @@ function getDailyPlannerData(dateStr){
   });
   rows.forEach(r=>{ const originalTimeLabel=r.label; Object.assign(r, slotMap[r.minute]||{state:'available'}); r.label=originalTimeLabel; });
   return {dateStr,bounds,rows,sessions:normalizedSessions,layout,meta,day,commitments,blockedSet:assignedData.blockedSet,allMinutes:assignedData.allMinutes};
-}
-function dailyAllowDrop(ev){ ev.preventDefault(); }
-function dailyDragStart(ev, sessionId){ ev.dataTransfer.setData('text/plain', sessionId); }
-function dailyDropOnSlot(dateStr, minute, ev){
-  ev.preventDefault();
-  const sid=ev.dataTransfer.getData('text/plain');
-  if(!sid) return;
-  const data=getDailyPlannerData(dateStr);
-  const session=data.sessions.find(s=>s.sid===sid);
-  if(!session || session.type==='goal-marker') return;
-  const occupied={};
-  data.sessions.forEach(s=>{ if(s.sid!==sid) normalizeDailySlotList(data.layout[s.sid]).forEach(m=>occupied[m]=s.sid); });
-  const assigned=allocateSlotsFromMinute(data.allMinutes, data.blockedSet, occupied, minute, session.slotCount);
-  if(!assigned){ showToast('Not enough free slots from that time — task remains unchanged'); return; }
-  const nextLayout={...data.layout, [sid]:assigned};
-  setDailyLayoutState(dateStr, nextLayout);
-  renderDayView();
-}
-function updateDailyTaskBar(sessId, val){
-  const pct=Math.max(0, Math.min(100, parseInt(val)||0));
-  const fill=document.getElementById(sessId+'-day-fill');
-  if(fill) fill.style.width=pct+'%';
-  const done=document.getElementById(sessId+'-day-done');
-  if(done) done.checked=pct>=100;
-}
-function saveDailyTaskProgress(sessId, dateStr){
-  const data=getDailyPlannerData(dateStr);
-  const s=data.sessions.find(x=>x.sid===sessId);
-  if(!s || s.type==='goal-marker') return;
-  const pctEl=document.getElementById(sessId+'-day-pct');
-  const doneEl=document.getElementById(sessId+'-day-done');
-  let pct=Math.max(0, Math.min(100, parseInt((pctEl&&pctEl.value)||0)||0));
-  if(doneEl && doneEl.checked) pct=100;
-  if(s.type==='mock') setSpecialTaskPct(s.specialTaskKey, pct);
-  else {
-    if(!state.topicData[s.subject]) state.topicData[s.subject]={};
-    if(!state.topicData[s.subject][s.ci]) state.topicData[s.subject][s.ci]={};
-    if(!state.topicData[s.subject][s.ci][s.ti]) state.topicData[s.subject][s.ci][s.ti]=[];
-    state.topicData[s.subject][s.ci][s.ti].push({pct,date:dateStr,rev:(state.topicData[s.subject][s.ci][s.ti].length+1),time:'',note:'Updated from daily planner'});
-    saveState();
-  }
-  showToast('Daily progress saved');
-  renderDayView();
-}
-function toggleDailyTaskDone(sessId, dateStr, checked){
-  const pctEl=document.getElementById(sessId+'-day-pct');
-  if(pctEl) pctEl.value=checked?100:0;
-  updateDailyTaskBar(sessId, checked?100:0);
-  saveDailyTaskProgress(sessId, dateStr);
-}
-function initDayView(){
-  const dp=document.getElementById('day-picker');
-  if(!dp.value)dp.value=todayStr();
-  renderDayView();
-}
-function shiftDay(n){
-  const dp=document.getElementById('day-picker');
-  const d=new Date((dp.value||todayStr())+'T00:00:00');
-  d.setDate(d.getDate()+n);
-  dp.value=toDateKey(d);
-  renderDayView();
-}
-function renderDayView(){
-  const ds=document.getElementById('day-picker').value||todayStr();
-  const data=getDailyPlannerData(ds);
-  const label=document.getElementById('day-total-label');
-  const plannedCount=data.sessions.filter(s=>s.type!=='goal-marker').length;
-  const blockedHrs=Math.round((data.commitments.reduce((a,c)=>a+(c.durationSlots*DAILY_SLOT_MINUTES),0)/60)*10)/10;
-  label.textContent=plannedCount?`${plannedCount} planned item${plannedCount>1?'s':''} · ${blockedHrs}h blocked`:`No tasks planned yet`;
-  const list=document.getElementById('day-log-list');
-  const goalSession=data.sessions.find(s=>s.type==='goal-marker');
-  let html=`<div class="day-summary">
-    <span class="day-pill">${new Date(ds+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span>
-    <span class="day-pill">${plannedCount} tasks from weekly plan</span>
-    <span class="day-pill">${data.commitments.length} blocked commitment${data.commitments.length!==1?'s':''}</span>
-  </div>`;
-  if(goalSession){ html+=`<div class="daily-goal-banner">🎯 <span>${goalSession.task}</span><span style="font-weight:400;color:var(--text2)">Goal occurs today</span></div>`; }
-  if(!data.rows.length){ list.innerHTML=html+`<div class="daily-empty-timeline">No timeline available for this day.</div>`; return; }
-  html+=`<div class="timeline-wrap"><div class="timeline-head"><div class="timeline-head-time">Time</div><div class="timeline-head-plan">Day Plan (tasks auto-split around blocked commitments)</div></div><div class="timeline-grid">`;
-  data.rows.forEach((row)=>{
-    const slotCls = row.state==='blocked' ? 'slot-blocked' : row.state==='planned' ? 'slot-planned' : row.state==='continued' ? 'slot-continued' : 'slot-available';
-    html+=`<div class="timeline-row"><div class="timeline-time">${row.label}</div><div class="timeline-slot ${slotCls}" ondragover="dailyAllowDrop(event)" ondrop="dailyDropOnSlot('${ds}', ${row.minute}, event)">`;
-    if(row.state==='blocked'){
-      const c=row.commitment||{};
-      html+=`<div class="timeline-slot-label">Blocked · ${(c.label||'Commitment')}${c.from&&c.to?` (${c.from}–${c.to})`:''}</div>`;
-    } else if(row.state==='planned' && row.session) {
-      const s=row.session;
-      const col=(s.type==='goal-marker'?(s.goalColor||'#8B6914'):(SUBJ_COLOR[s.subject]||'var(--accent)'));
-      const progress=s.type==='goal-marker'?0:(s.type==='mock'?getSpecialTaskPct(s.specialTaskKey):getDailyTopicProgress(s));
-      const seg=row.segmentMinutes||[];
-      const segMinutes=seg.length*DAILY_SLOT_MINUTES;
-      const segHours=(Math.round((segMinutes/60)*100)/100).toString().replace(/\.0$/,'');
-      const segStart=seg.length?seg[0]:row.minute;
-      const segEnd=seg.length?seg[seg.length-1]+DAILY_SLOT_MINUTES:row.minute+DAILY_SLOT_MINUTES;
-      html+=`<div class="daily-task-card ${s.type==='mock'?'task-mock':''} ${s.type==='goal-marker'?'task-goal':''}" draggable="${s.type==='goal-marker'?'false':'true'}" ondragstart="dailyDragStart(event,'${s.sid}')" style="border-left:3px solid ${col}"><div class="daily-task-top"><span class="daily-task-type" style="color:${col}">${s.type==='mock'?'Mock Test':s.type==='goal-marker'?'Goal':'Task'}</span><span class="daily-task-title">${s.topicName||s.task}</span></div><div class="daily-task-sub">${s.chName?`${s.chName} · `:''}${formatTimeLabel(segStart)}–${formatTimeLabel(segEnd)} · ${segHours}h${(s.segmentCount||1)>1?` · Part ${row.segmentIndex+1}/${s.segmentCount}`:''}${s.cantCoverBeforeDueDate?' · Cant be covered before due date':''}</div>${s.type==='goal-marker' ? `<div class="daily-task-meta"><span>Goal date</span></div>` : `<div class="daily-task-meta"><label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input id="${s.sid}-day-done" type="checkbox" ${progress>=100?'checked':''} onchange="toggleDailyTaskDone('${s.sid}','${ds}',this.checked)" style="cursor:pointer">Done</label><div class="daily-task-progress"><input id="${s.sid}-day-pct" type="number" min="0" max="100" value="${progress}" oninput="updateDailyTaskBar('${s.sid}',this.value)"><span style="font-size:10px;color:var(--text3)">%</span><div class="daily-progress-bar"><div class="daily-progress-fill" id="${s.sid}-day-fill" style="width:${progress}%"></div></div></div><div class="daily-task-actions"><button class="daily-mini-btn" onclick="saveDailyTaskProgress('${s.sid}','${ds}')">Save</button></div></div>`}</div>`;
-    } else if(row.state==='continued') {
-      html+=`<div class="timeline-slot-continued-label">Task continues in this slot</div>`;
-    } else { html+=`<div class="timeline-slot-label">Available slot</div>`; }
-    html+=`</div></div>`;
-  });
-  html+=`</div></div>`;
-  if(!plannedCount && !goalSession) html+=`<div class="daily-empty-timeline">No tasks found for this date from the weekly plan yet. Open Weekly Plan and refresh once to default tasks here.</div>`;
-  list.innerHTML=html;
 }
 /* ═══════════════════════════════════
    ALERTS & INSIGHTS
@@ -3028,6 +3025,9 @@ function psrSave(sessId,sub,ci,ti,date,topicName){
   const revNum=logs.length+1;
   logs.push({pct,date:date||todayStr(),rev:revNum,time:'',note:'Logged from weekly plan'});
   saveState();
+  // Mirror progress: keep goal topic status and daily plan pct in sync
+  try{ syncGoalTopicStatusEverywhere(sub, ciInt, tiInt, pct); }catch(e){}
+  try{ wpUpdateDailyPlanPct(sub, ciInt, tiInt, date, pct); }catch(e){}
   // Update done checkbox
   const doneEl=document.getElementById(sessId+'-done');
   if(doneEl)doneEl.checked=pct>=100;
@@ -3059,6 +3059,8 @@ function psrRemove(rowId,sub,ci,ti){
       }
     }
   }
+  // Mirror removal to Daily Plan for the same date, if applicable
+  try{ const dateStr=extractDateFromSessId(rowId); if(dateStr && sub && !isNaN(ciInt) && ciInt>=0 && !isNaN(tiInt) && tiInt>=0) wpMirrorRemoveFromDaily(sub, ciInt, tiInt, dateStr); }catch(e){}
   row.style.transition='opacity .2s,max-height .2s';
   row.style.opacity='0';
   setTimeout(()=>row.remove(),200);
@@ -3178,6 +3180,14 @@ function confirmAddTopics(){
   // Insert new rows directly into the correct day body without full re-render
   // Find the day column by date
   const SUBJ_COL_LOCAL={physics:'var(--phy)',chemistry:'var(--che)',maths:'var(--mat)'};
+  // Mirror each added topic into Daily Plan for the same date
+  checked.forEach((el)=>{
+    try{
+      const parts=el.value.split('-');
+      const sub=parts[0], ci=parseInt(parts[1]), ti=parseInt(parts[2]);
+      wpMirrorAddToDaily(sub, ci, ti, _atpDate);
+    }catch(e){}
+  });
   checked.forEach((el,idx)=>{
     const parts=el.value.split('-');
     const sub=parts[0],ci=parseInt(parts[1]),ti=parseInt(parts[2]);
@@ -3485,6 +3495,51 @@ function setGoalTopicExpectedHours(goalId,sub,ci,ti,val){
   renderGoalDetail(goalId);
   showToast('Expected hours updated');
 }
+/* ── Per-topic status inside a Goal (Yet to Start / In Progress / Completed) ── */
+const GOAL_TOPIC_STATUSES = ['yet-to-start','in-progress','completed'];
+function getGoalTopicStatus(goal, sub, ci, ti){
+  const key = sub+'-'+ci;
+  if(!goal || !goal.topicStatus || !goal.topicStatus[key] || goal.topicStatus[key][ti]===undefined || goal.topicStatus[key][ti]===null) return 'yet-to-start';
+  const v = goal.topicStatus[key][ti];
+  return GOAL_TOPIC_STATUSES.includes(v) ? v : 'yet-to-start';
+}
+function setGoalTopicStatusByGoalId(goalId, sub, ci, ti, status){
+  if(!GOAL_TOPIC_STATUSES.includes(status)) return false;
+  const goals=getGoals();
+  const g=goals.find(x=>x.id===goalId);
+  if(!g) return false;
+  const key=sub+'-'+parseInt(ci);
+  if(!g.topicStatus) g.topicStatus={};
+  if(!g.topicStatus[key]) g.topicStatus[key]={};
+  g.topicStatus[key][parseInt(ti)] = status;
+  saveGoals(goals);
+  return true;
+}
+function goalTopicStatusLabel(status){
+  if(status==='completed') return 'Completed';
+  if(status==='in-progress') return 'In Progress';
+  return 'Yet to Start';
+}
+function goalTopicStatusBadgeClass(status){
+  if(status==='completed') return 'b-done';
+  if(status==='in-progress') return 'b-prog';
+  return 'b-not';
+}
+function onGoalTopicStatusChange(el){
+  if(!el) return;
+  const goalId = el.getAttribute('data-goal-id');
+  const sub    = el.getAttribute('data-sub');
+  const ci     = parseInt(el.getAttribute('data-ci'));
+  const ti     = parseInt(el.getAttribute('data-ti'));
+  const status = el.value;
+  if(setGoalTopicStatusByGoalId(goalId, sub, ci, ti, status)){
+    showToast('Status updated to '+goalTopicStatusLabel(status));
+    const goalsPage=document.getElementById('page-goals');
+    if(goalsPage && !goalsPage.classList.contains('hidden')){
+      renderGoalsList();
+    }
+  }
+}
 function goalCompletionCount(sub,ci,ti){
   const logs=(state.topicData && state.topicData[sub] && state.topicData[sub][ci] && state.topicData[sub][ci][ti]) || [];
   return logs.filter(l => Number((l&&l.pct)||0) >= 100).length;
@@ -3508,8 +3563,9 @@ function getGoalMetrics(goal){
   const topics=(cv.topics||[]).map(t=>{
     const completedCount = goalCompletionCount(t.sub,t.ci,t.ti);
     const expectedHours = getGoalTopicExpectedHours(goal,t.sub,t.ci,t.ti);
+    const topicStatus   = getGoalTopicStatus(goal, t.sub, t.ci, t.ti);
     const coveredInSchool=(state.topicMeta && state.topicMeta[t.sub] && state.topicMeta[t.sub][t.ci] && state.topicMeta[t.sub][t.ci][t.ti] && state.topicMeta[t.sub][t.ci][t.ti].coveredInSchool) || false;
-    return {...t, completedCount, expectedHours, coveredInSchool};
+    return {...t, completedCount, expectedHours, topicStatus, coveredInSchool};
   });
   const totalTopics = cv.totalTopics || 0;
   const wellCovered = topics.filter(t=>t.pct>=80).length;
@@ -3635,19 +3691,24 @@ function renderGoalDetail(goalId){
         <span>Topic</span>
         <span>Exp. Hours</span>
         <span>Coverage</span>
-                <span></span>
+        <span>Status</span>
+        <span></span>
       </div>
       ${sorted.map(t=>{
         const fillColor=t.pct>=80?'var(--accent)':t.pct>=40?'var(--warn)':'var(--high)';
+        const _st = t.topicStatus || 'yet-to-start';
         return `<div class="goal-grid-row-7">
           <span class="ggr-subj" style="color:${SCOL[t.sub]||'var(--text)'}">${t.sub}</span>
           <span class="ggr-chapter" title="${t.chName}">${t.chName}</span>
           <span class="ggr-topic" title="${t.topicName}">${t.topicName}</span>
-          <span><input class="goal-hours-input" type="number" min="0" step="0.5" data-goal-hours="1" data-goal-id="${g.id}" data-sub="${t.sub}" data-ci="${t.ci}" data-ti="${t.ti}" value="${t.expectedHours}"></span>
+          <span class="ggr-hours-cell"><input class="goal-hours-input" type="number" min="0" step="0.5" data-goal-hours="1" data-goal-id="${g.id}" data-sub="${t.sub}" data-ci="${t.ci}" data-ti="${t.ti}" value="${t.expectedHours}"></span>
           <div class="ggr-pct">
             <div class="ggr-pbar"><div class="ggr-pfill" style="width:${t.pct}%;background:${fillColor}"></div></div>
             <span style="font-size:10px;color:var(--text3);min-width:24px">${t.pct}%</span>
           </div>
+          <span>
+            <span class="goal-status-badge-ro status-${_st}" title="Auto-updated from Daily Plan progress (read-only). 100%=Completed, 1-99%=In Progress, 0%=Yet to Start.">${goalTopicStatusLabel(_st)}</span>
+          </span>
           <button class="ggr-remove" onclick="removeTopicFromGoal('${g.id}','${t.sub}',${t.ci},${t.ti})" title="Remove from goal">✕</button>
         </div>`;
       }).join('')}
@@ -3816,6 +3877,10 @@ function removeTopicFromGoal(goalId,sub,ci,ti){
     delete g.scopeHours[key][parseInt(ti)];
     if(Object.keys(g.scopeHours[key]).length===0) delete g.scopeHours[key];
   }
+  if(g.topicStatus && g.topicStatus[key]){
+    delete g.topicStatus[key][parseInt(ti)];
+    if(Object.keys(g.topicStatus[key]).length===0) delete g.topicStatus[key];
+  }
   saveGoals(goals);
   renderGoalDetail(goalId);
   renderGoalsList();
@@ -3949,7 +4014,7 @@ function showToast(msg){
 })();
 
 loadState();
-nav('dayview');
+nav('dailyplan');
 
 function selectOpt(qi,oi,correct){
   const letter=String.fromCharCode(65+oi);
@@ -4016,7 +4081,7 @@ function showToast(msg){
 })();
 
 loadState();
-nav('dayview');
+nav('dailyplan');
 
 
 
@@ -4134,14 +4199,43 @@ function setTopicPlace(sub,ci,ti,field,checked){
 }
 function getBacklogTopics(){
   const out=[];
+  const seen=new Set();
+  const goals=getGoals();
+
+  function addTopic(sub,ci,ti,chName,topicName,meta,isGoalTopic){
+    const key=[sub,ci,ti].join('-');
+    if(seen.has(key)) return;
+
+    const status=getTopicStudyStatus(sub,ci,ti);
+
+    // School/Tuition topics remain until completed once.
+    // Goal topics must appear for revision even if previously completed,
+    // but are removed once marked Completed for the active goal topic status.
+    let include=false;
+    if(isGoalTopic){
+      const goalCompleted=goals.some(g=>{
+        const sk=sub+'-'+ci;
+        const ts=(g.topicStatus||{})[sk]?.[ti];
+        return String(ts||'').toLowerCase()==='completed';
+      });
+      include=!goalCompleted;
+    }
+    if((meta.inSchool || meta.inTuition || meta.coveredInSchool) && status==='Not Started') include=true;
+
+    if(include){
+      seen.add(key);
+      out.push({sub,ci,ti,chapterName:chName,topicName,inSchool:!!meta.inSchool,inTuition:!!meta.inTuition,isGoalTopic:!!isGoalTopic});
+    }
+  }
+
   Object.keys(CHAPTERS).forEach(sub=>{
     CHAPTERS[sub].forEach((ch,ci)=>{
       ch.topics.forEach((topicName,ti)=>{
         ensureTopicState(sub,ci,ti);
-        const meta=state.topicMeta[sub][ci][ti] || {};
-        const covered=!!(meta.inSchool || meta.inTuition || meta.coveredInSchool);
-        const status=getTopicStudyStatus(sub,ci,ti);
-        if(covered && status==='Not Started') out.push({sub,ci,ti,chapterName:ch.name,topicName,inSchool:!!meta.inSchool,inTuition:!!meta.inTuition});
+        const meta=(state.topicMeta?.[sub]?.[ci]?.[ti])||{};
+        const scopeKey=sub+'-'+ci;
+        const inGoal=goals.some(g=>g.scope && g.scope[scopeKey] && g.scope[scopeKey][ti]);
+        addTopic(sub,ci,ti,ch.name,topicName,meta,inGoal);
       });
     });
   });
@@ -4152,7 +4246,7 @@ function renderBacklogsPage(){
   if(!container) return;
   const rows=getBacklogTopics();
   const gridCols='130px minmax(200px,.9fr) minmax(260px,1.25fr) 86px 86px 58px 58px';
-  let html=`<div class="day-summary"><span class="day-pill">${rows.length} backlog topic${rows.length!==1?'s':''}</span><span class="day-pill">Covered in School/Tuition but not completed</span></div>`;
+  let html=`<div class="day-summary"><span class="day-pill">${rows.length} backlog topic${rows.length!==1?'s':''}</span><span class="day-pill">School/Tuition topics plus Goal topics pending revision</span></div>`;
   if(!rows.length){
     container.innerHTML=html+`<div class="goal-list-empty">No backlog topics found.<br><small>Topics will appear here when In School or In Tuition is checked and the study status is still Not Started.</small></div>`;
     return;
@@ -4311,6 +4405,8 @@ function addBacklogTaskToWeeklyPlan(dateStr,startMinute){
   }
   const modal=document.getElementById('backlog-plan-modal');
   if(modal) modal.remove();
+  // Also reflect in Daily Plan for the same date
+  try{ wpMirrorAddToDaily(sub, ci, ti, dateStr, {fromTime: (function(m){var h=Math.floor(m/60),mm=m%60; return String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0');})(startMinute)}); }catch(e){}
   showToast('Backlog task added to weekly plan for '+formatDate(dateStr)+' at '+formatTimeLabel(startMinute));
   const weeklyPage=document.getElementById('page-weekly');
   if(weeklyPage && !weeklyPage.classList.contains('hidden')) renderWeekly();
@@ -4351,6 +4447,1026 @@ function addChapter(sub){
   if(!name) return;
   CHAPTERS[sub].push({name, weight:'med', topics:[]});
   renderChapterList(sub);
+}
+
+/* ═══════════════════════════════════
+   DAILY PLAN — new page under Overview
+   Storage: safeLS 'studydesk-daily-plan-v1' -> { 'YYYY-MM-DD': [ tasks ] }
+   Task: {id, source:'subject'|'goal', sub, ci, ti, goalId, topicName, chapterName,
+          fromTime, toTime, pct, saved:true}
+═══════════════════════════════════ */
+const DP_KEY = 'studydesk-daily-plan-v1';
+function dpEscape(s){ return String(s||'').replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function dpTodayStr(){ return new Date().toISOString().split('T')[0]; }
+function dpLoadAll(){ try { return JSON.parse(safeLS.getItem(DP_KEY)||'{}'); } catch(e) { return {}; } }
+function dpSaveAll(obj){ safeLS.setItem(DP_KEY, JSON.stringify(obj||{})); }
+function dpGetTasks(dateStr){ const all=dpLoadAll(); return Array.isArray(all[dateStr])?all[dateStr]:[]; }
+function dpSetTasks(dateStr, tasks){ const all=dpLoadAll(); all[dateStr]=tasks||[]; dpSaveAll(all); }
+function dpSortByTime(a,b){
+  const at=a.fromTime||'99:99', bt=b.fromTime||'99:99';
+  if(at===bt) return (a.toTime||'').localeCompare(b.toTime||'');
+  return at.localeCompare(bt);
+}
+function dpFormatTimeRange(from,to){
+  if(!from && !to) return '';
+  const f=from?dpFormatTime12(from):'';
+  const t=to?dpFormatTime12(to):'';
+  if(f && t) return f+' – '+t;
+  return f||t;
+}
+function dpFormatTime12(hhmm){
+  if(!hhmm||!hhmm.includes(':')) return hhmm||'';
+  const [h,m]=hhmm.split(':').map(x=>parseInt(x,10));
+  const hh=((h+11)%12)+1;
+  const ampm=h<12?'AM':'PM';
+  return hh+':'+String(m).padStart(2,'0')+' '+ampm;
+}
+function initDailyPlan(){
+  const p=document.getElementById('dp-picker');
+  if(p && !p.value) p.value=dpTodayStr();
+  renderDailyPlan();
+}
+function dpShiftDay(n){
+  const p=document.getElementById('dp-picker');
+  const d=new Date((p.value||dpTodayStr())+'T00:00:00');
+  d.setDate(d.getDate()+n);
+  p.value=toDateKey(d);
+  renderDailyPlan();
+}
+function dpTaskIsDone(t){ return (parseInt(t.pct)||0)>=100; }
+function renderDailyPlan(){
+  const ds=document.getElementById('dp-picker').value||dpTodayStr();
+  const tasks=dpGetTasks(ds).slice().sort(dpSortByTime);
+  const done=tasks.filter(dpTaskIsDone).length;
+  const label=document.getElementById('dp-total-label');
+  if(label) label.textContent = tasks.length ? (done+'/'+tasks.length+' completed') : 'No tasks planned yet';
+  const dt=new Date(ds+'T00:00:00');
+  const humanDate=dt.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  let html = '<div class="day-summary">'
+    + '<span class="day-pill">'+humanDate+'</span>'
+    + '<span class="day-pill">'+tasks.length+' task'+(tasks.length!==1?'s':'')+'</span>'
+    + '<span class="day-pill">'+done+' completed</span>'
+    + '</div>';
+  if(!tasks.length){
+    html += '<div class="goal-list-empty">No tasks planned for this day.<br><small>Click <b>+ Add Task</b> to plan a task from Subjects or Goals with a time range.</small></div>';
+    document.getElementById('dp-plan-list').innerHTML = html;
+    return;
+  }
+  html += '<div class="daily-list-wrap">'
+    + '<div class="daily-list-head" style="grid-template-columns:130px 100px 1fr 200px 130px 90px"><span>Time</span><span>Subject</span><span>Task</span><span></span><span>Current Status</span><span></span></div>';
+  tasks.forEach(t=>{
+    const col=SUBJ_COLOR[t.sub]||'var(--accent)';
+    const isDone=dpTaskIsDone(t);
+    const range=dpFormatTimeRange(t.fromTime,t.toTime);
+    const timeCell = range
+      ? '<div style="font-size:12px;color:var(--text);font-weight:600;white-space:nowrap;line-height:1.1;padding:0 4px">'+dpEscape(range)+'</div>'
+      : '<div style="font-size:11px;color:var(--text3);font-style:italic;padding:0 4px">No time set</div>';
+    const subjLabel = t.sub ? (t.sub.charAt(0).toUpperCase()+t.sub.slice(1)) : '';
+    // If the task came from a Goal, look up the goal name so we can show it above the subject
+    let goalNameForSubject = '';
+    if(t.source==='goal' && t.goalId){
+      try{
+        const _allGoals = getGoals();
+        const _g = _allGoals.find(x=>x.id===t.goalId);
+        if(_g && _g.name) goalNameForSubject = _g.name;
+      }catch(e){}
+    }
+    // Subject column: for goal-source tasks show "GoalName" (small) above the subject chip.
+    let subjectCell;
+    if(subjLabel){
+      if(goalNameForSubject){
+        subjectCell = '<div style="display:flex;flex-direction:column;justify-content:center;padding:0 4px;min-width:0;line-height:1.15">'
+          + '<span title="'+dpEscape(goalNameForSubject)+'" style="font-size:10px;font-weight:600;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+dpEscape(goalNameForSubject)+'</span>'
+          + '<span style="font-size:11px;font-weight:600;color:'+col+';white-space:nowrap">'+dpEscape(subjLabel)+'</span>'
+          + '</div>';
+      } else {
+        subjectCell = '<div style="display:flex;align-items:center;padding:0 4px"><span style="font-size:11px;font-weight:600;color:'+col+';white-space:nowrap">'+dpEscape(subjLabel)+'</span></div>';
+      }
+    } else {
+      subjectCell = '<div></div>';
+    }
+    const sourceTag = t.source==='goal' ? 'Goal' : 'Manual';
+    // Task subline no longer duplicates subject (chapter · Manual/Goal only)
+    const subLine = [t.chapterName, sourceTag].filter(Boolean).map(dpEscape).join(' · ');
+    // Current status pulled from Subjects section using its own logic (moved to the right)
+    const curStatus = (typeof t.ci==='number' && typeof t.ti==='number' && t.sub)
+      ? getTopicStudyStatus(t.sub, t.ci, t.ti) : 'Not Started';
+    const curStatusClass = curStatus==='Completed Once' ? 'b-done' : (curStatus.startsWith('Revision') ? 'b-rev' : 'b-not');
+    const currentStatusCell = '<div style="display:flex;align-items:center;padding:0 4px"><span class="badge '+curStatusClass+'" title="Auto-calculated from Subjects — completed sessions of this topic">'+dpEscape(curStatus)+'</span></div>';
+    html += '<div class="daily-list-row '+(isDone?'done':'')+'" style="grid-template-columns:130px 100px 1fr 200px 130px 90px;border-left:3px solid '+col+'">'
+      + timeCell
+      + subjectCell
+      + '<div><div class="daily-list-title">'+dpEscape(t.topicName||'Task')+'</div><div class="daily-list-sub">'+subLine+'</div></div>'
+      + '<div style="display:flex;align-items:center;gap:6px;justify-content:flex-start">'
+        + '<input type="number" min="0" max="100" value="'+(parseInt(t.pct)||0)+'" id="dp-pct-'+t.id+'" oninput="dpOnPctChange(\''+t.id+'\')" style="width:64px;border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:\'DM Sans\',sans-serif;text-align:center;background:var(--surface);color:var(--text)">'
+        + '<span style="font-size:11px;color:var(--text3)">%</span>'
+        + '<button id="dp-save-'+t.id+'" class="daily-list-remove" onclick="dpSaveTask(\''+t.id+'\')" style="color:var(--text3)" disabled>Save</button>'
+      + '</div>'
+      + currentStatusCell
+      + '<div class="daily-list-actions"><button class="daily-list-remove" onclick="dpRemoveTask(\''+t.id+'\')">Remove</button></div>'
+      + '</div>';
+  });
+  html += '</div>';
+  document.getElementById('dp-plan-list').innerHTML = html;
+}
+function dpOnPctChange(id){
+  const ds=document.getElementById('dp-picker').value||dpTodayStr();
+  const tasks=dpGetTasks(ds);
+  const t=tasks.find(x=>x.id===id); if(!t) return;
+  const el=document.getElementById('dp-pct-'+id);
+  const btn=document.getElementById('dp-save-'+id);
+  const nv=Math.max(0,Math.min(100,parseInt(el.value)||0));
+  if(nv!==(parseInt(t.pct)||0)){
+    if(btn){ btn.disabled=false; btn.style.color='var(--accent)'; btn.style.borderColor='var(--accent)'; }
+  } else {
+    if(btn){ btn.disabled=true; btn.style.color='var(--text3)'; btn.style.borderColor='var(--border)'; }
+  }
+}
+function dpToggleDone(id, checked){
+  const ds=document.getElementById('dp-picker').value||dpTodayStr();
+  const tasks=dpGetTasks(ds);
+  const t=tasks.find(x=>x.id===id); if(!t) return;
+  t.pct = checked ? 100 : 0;
+  dpSetTasks(ds, tasks);
+  dpApplyProgressToSubject(t);
+  dpSyncGoalTopicStatus(t);
+  dpShowSavedPopup(checked?'Task marked complete':'Task marked incomplete');
+  renderDailyPlan();
+}
+function dpSaveTask(id){
+  const ds=document.getElementById('dp-picker').value||dpTodayStr();
+  const tasks=dpGetTasks(ds);
+  const t=tasks.find(x=>x.id===id); if(!t) return;
+  const el=document.getElementById('dp-pct-'+id);
+  const nv=Math.max(0,Math.min(100,parseInt(el && el.value)||0));
+  t.pct=nv;
+  dpSetTasks(ds, tasks);
+  dpApplyProgressToSubject(t);
+  dpSyncGoalTopicStatus(t);
+  dpShowSavedPopup('Record saved successfully — '+nv+'% for '+(t.topicName||'task'));
+  renderDailyPlan();
+  refreshWeeklyPlanIfOpen();
+}
+function dpRemoveTask(id){
+  const ds=document.getElementById('dp-picker').value||dpTodayStr();
+  let tasks=dpGetTasks(ds);
+  tasks=tasks.filter(x=>x.id!==id);
+  dpSetTasks(ds, tasks);
+  dpMirrorRemoveFromWeekly(id, ds);
+  showToast('Task removed');
+  renderDailyPlan();
+}
+function dpApplyProgressToSubject(t){
+  // Sync only when task hits 100%. Uses the exact same completion definition as Subjects
+  // (pct>=100 log increments Not Started -> Completed Once -> Revision 1 -> Revision 2 ...).
+  // A "loggedAt100" flag on the daily task guarantees each Daily Plan task increments
+  // the Subjects status at most once, no matter how many times Save is clicked.
+  if(!t || t.sub===undefined || t.ci===undefined || t.ti===undefined) return;
+  if(typeof t.ci!=='number' || typeof t.ti!=='number') return;
+  const pct=Math.max(0,Math.min(100,parseInt(t.pct)||0));
+  if(pct<100 || t.loggedAt100) return;
+  if(!state.topicData[t.sub]) state.topicData[t.sub]={};
+  if(!state.topicData[t.sub][t.ci]) state.topicData[t.sub][t.ci]={};
+  if(!state.topicData[t.sub][t.ci][t.ti]) state.topicData[t.sub][t.ci][t.ti]=[];
+  const logs=state.topicData[t.sub][t.ci][t.ti];
+  logs.push({pct:100, date: document.getElementById('dp-picker').value||dpTodayStr(), rev:logs.length+1, time:t.fromTime||'', note:'Completed from Daily Plan'});
+  safeLS.setItem('studydesk-v2', JSON.stringify(state));
+  // Persist the flag on the daily task so re-saves don't double-count
+  t.loggedAt100 = true;
+  const ds = document.getElementById('dp-picker').value||dpTodayStr();
+  const all = dpLoadAll();
+  const arr = Array.isArray(all[ds]) ? all[ds] : [];
+  const idx = arr.findIndex(x=>x.id===t.id);
+  if(idx>=0){ arr[idx].loggedAt100 = true; all[ds]=arr; dpSaveAll(all); }
+  if(typeof updateSidebarCounts==='function') updateSidebarCounts();
+}
+/* ── When a Daily Plan task belongs to a Goal, mirror its % into the Goal's topic status ──
+      pct === 100  → 'completed'
+      0 < pct < 100 → 'in-progress'
+      pct === 0    → 'yet-to-start'   */
+function dpSyncGoalTopicStatus(t){
+  if(!t || !t.sub) return;
+  const ci = Number(t.ci);
+  const ti = Number(t.ti);
+  if(isNaN(ci) || isNaN(ti)) return;
+  const pct = Math.max(0, Math.min(100, parseInt(t.pct)||0));
+  // Update EVERY goal that contains this topic in scope — always propagate
+  // regardless of what task.source or task.goalId was.
+  syncGoalTopicStatusEverywhere(t.sub, ci, ti, pct);
+}
+function syncGoalTopicStatusEverywhere(sub, ci, ti, pct){
+  const ciN = Number(ci);
+  const tiN = Number(ti);
+  if(!sub || isNaN(ciN) || isNaN(tiN)) return false;
+  const p = Math.max(0, Math.min(100, parseInt(pct)||0));
+  const status = p>=100 ? 'completed' : (p>0 ? 'in-progress' : 'yet-to-start');
+  const goals = getGoals();
+  let changed = false;
+  goals.forEach(g=>{
+    if(!g) return;
+    if(!g.scope) g.scope={};
+    const key = sub+'-'+ciN;
+    const scopeCell = g.scope[key];
+    if(!scopeCell) return;
+    if(!scopeCell[tiN] && !scopeCell[String(tiN)]) return;
+    if(!g.topicStatus) g.topicStatus={};
+    if(!g.topicStatus[key]) g.topicStatus[key]={};
+    if(g.topicStatus[key][tiN] !== status){
+      g.topicStatus[key][tiN] = status;
+      changed = true;
+    }
+  });
+  if(changed){
+    saveGoals(goals);
+    try{
+      const goalsPage = document.getElementById('page-goals');
+      if(goalsPage && !goalsPage.classList.contains('hidden')){
+        if(typeof activeGoalDetailId !== 'undefined' && activeGoalDetailId) renderGoalDetail(activeGoalDetailId);
+        else renderGoalsList();
+      }
+    }catch(e){ console.error('syncGoalTopicStatusEverywhere refresh',e); }
+  }
+  return changed;
+}
+function dpShowSavedPopup(msg){
+  const old=document.getElementById('dp-saved-popup');
+  if(old) old.remove();
+  const overlay=document.createElement('div');
+  overlay.id='dp-saved-popup';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = '<div style="background:var(--surface);border-radius:14px;padding:22px 26px;max-width:380px;box-shadow:0 16px 40px rgba(0,0,0,.18);text-align:center">'
+    + '<div style="font-size:28px;color:var(--accent);margin-bottom:6px">✓</div>'
+    + '<div style="font-family:\'Fraunces\',serif;font-size:18px;margin-bottom:4px">Saved</div>'
+    + '<div style="font-size:13px;color:var(--text2);margin-bottom:16px">'+dpEscape(msg||'Record saved successfully')+'</div>'
+    + '<button class="btn-p" onclick="document.getElementById(\'dp-saved-popup\').remove()" style="min-width:100px">OK</button>'
+    + '</div>';
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+  setTimeout(()=>{ const el=document.getElementById('dp-saved-popup'); if(el) el.remove(); }, 2200);
+}
+/* ── Add Task modal ── */
+function openDailyPlanTaskModal(){
+  const ds=document.getElementById('dp-picker').value||dpTodayStr();
+  const old=document.getElementById('dp-task-modal'); if(old) old.remove();
+  const modal=document.createElement('div');
+  modal.id='dp-task-modal';
+  modal.className='modal-overlay';
+  modal.style.display='flex';
+  modal.innerHTML = '<div class="modal-box" style="max-width:640px">'
+    + '<div class="modal-head">'
+      + '<div><div class="modal-title">Add Task to Daily Plan</div>'
+      + '<div style="font-size:12px;color:var(--text2);margin-top:4px">'+new Date(ds+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'</div></div>'
+      + '<button class="modal-close" onclick="document.getElementById(\'dp-task-modal\').remove()">✕</button>'
+    + '</div>'
+    + '<div class="modal-body">'
+      + '<div class="daily-manual-row one"><div class="daily-manual-field"><label>Source</label>'
+        + '<select id="dp-source" onchange="dpSourceChanged()">'
+          + '<option value="subject">Subjects & Tasks</option>'
+          + '<option value="goal">Goals</option>'
+        + '</select></div></div>'
+      + '<div id="dp-subject-block">'
+        + '<div class="daily-manual-row">'
+          + '<div class="daily-manual-field"><label>Subject</label><select id="dp-subject" onchange="dpPopulateChapters();dpPopulateTopics()"></select></div>'
+          + '<div class="daily-manual-field"><label>Chapter</label><select id="dp-chapter" onchange="dpPopulateTopics()"></select></div>'
+        + '</div>'
+        + '<div class="daily-manual-row one"><div class="daily-manual-field"><label>Topic</label><select id="dp-topic"></select></div></div>'
+      + '</div>'
+      + '<div id="dp-goal-block" style="display:none">'
+        + '<div class="daily-manual-row">'
+          + '<div class="daily-manual-field"><label>Goal</label><select id="dp-goal" onchange="dpPopulateGoalTopics()"></select></div>'
+          + '<div class="daily-manual-field"><label>Topic in selected goal</label><select id="dp-goal-topic"></select></div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="daily-manual-row">'
+        + '<div class="daily-manual-field"><label>From (time)</label><input type="time" id="dp-from"></div>'
+        + '<div class="daily-manual-field"><label>To (time)</label><input type="time" id="dp-to"></div>'
+      + '</div>'
+      + '<div class="daily-manual-help">Time range is shown at the beginning of each task on the Daily Plan page so the student knows when to attempt it.</div>'
+      + '<div style="display:flex;gap:10px">'
+        + '<button class="btn-p" style="flex:1" onclick="confirmDailyPlanTask()">Add Task</button>'
+        + '<button class="btn-s" onclick="document.getElementById(\'dp-task-modal\').remove()">Cancel</button>'
+      + '</div>'
+    + '</div></div>';
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+  dpPopulateSubjects(); dpPopulateChapters(); dpPopulateTopics();
+  dpPopulateGoals(); dpPopulateGoalTopics();
+}
+function dpSourceChanged(){
+  const src=document.getElementById('dp-source').value;
+  document.getElementById('dp-subject-block').style.display = src==='subject'?'':'none';
+  document.getElementById('dp-goal-block').style.display = src==='goal'?'':'none';
+}
+function dpPopulateSubjects(){
+  const s=document.getElementById('dp-subject'); if(!s) return;
+  s.innerHTML = Object.keys(CHAPTERS).map(sub=>'<option value="'+sub+'">'+sub.charAt(0).toUpperCase()+sub.slice(1)+'</option>').join('');
+}
+function dpPopulateChapters(){
+  const sub=document.getElementById('dp-subject')?.value||'physics';
+  const ch=document.getElementById('dp-chapter'); if(!ch) return;
+  ch.innerHTML=(CHAPTERS[sub]||[]).map((c,ci)=>'<option value="'+ci+'">'+dpEscape(c.name)+'</option>').join('');
+}
+function dpPopulateTopics(){
+  const sub=document.getElementById('dp-subject')?.value||'physics';
+  const ci=parseInt(document.getElementById('dp-chapter')?.value||0,10)||0;
+  const tp=document.getElementById('dp-topic'); if(!tp) return;
+  tp.innerHTML=((CHAPTERS[sub]&&CHAPTERS[sub][ci]&&CHAPTERS[sub][ci].topics)||[]).map((t,ti)=>'<option value="'+ti+'">'+dpEscape(t)+'</option>').join('');
+}
+function dpPopulateGoals(){
+  const sel=document.getElementById('dp-goal'); if(!sel) return;
+  const goals=getGoals();
+  sel.innerHTML = goals.length ? goals.map(g=>'<option value="'+g.id+'">'+dpEscape(g.name)+'</option>').join('') : '<option value="">No goals</option>';
+}
+function dpPopulateGoalTopics(){
+  const goalId=document.getElementById('dp-goal')?.value||'';
+  const sel=document.getElementById('dp-goal-topic'); if(!sel) return;
+  const goals=getGoals(); const goal=goals.find(g=>g.id===goalId)||goals[0];
+  if(!goal){ sel.innerHTML='<option value="">No topics</option>'; return; }
+  const rows=(goalCoverage(goal).topics)||[];
+  sel.innerHTML = rows.length ? rows.map(t=>'<option value="'+t.sub+'::'+t.ci+'::'+t.ti+'">'+dpEscape(t.sub.charAt(0).toUpperCase()+t.sub.slice(1)+' · '+t.chName+' · '+t.topicName)+'</option>').join('') : '<option value="">No topics in this goal</option>';
+}
+
+/* ═══════════════════════════════════
+   DAILY PLAN  <==>  WEEKLY PLAN  MIRROR SYNC
+   Adding/removing a task in Daily Plan reflects in Weekly Plan for the same date,
+   and vice versa. Progress is already shared via state.topicData so it stays in sync.
+═══════════════════════════════════ */
+function refreshWeeklyPlanIfOpen(){
+  const page=document.getElementById('page-weekly');
+  if(page && !page.classList.contains('hidden')){
+    try{ generateWeeklyPlan(false); }catch(e){ console.error(e); }
+  }
+}
+function refreshDailyPlanIfOpen(){
+  const page=document.getElementById('page-dailyplan');
+  if(page && !page.classList.contains('hidden')){
+    try{ renderDailyPlan(); }catch(e){ console.error(e); }
+  }
+}
+function extractDateFromSessId(sessId){
+  const m=(sessId||'').match(/^ps-(\d{4}-\d{2}-\d{2})/);
+  return m?m[1]:'';
+}
+function findWeekCacheEntryForDate(dateStr){
+  const cache=getWeekPlanCache();
+  const keys=Object.keys(cache||{});
+  for(const k of keys){
+    const rec=cache[k];
+    if(rec && rec.plan && Array.isArray(rec.plan.days)){
+      const day=rec.plan.days.find(d=>d.date===dateStr);
+      if(day) return {cacheKey:k, rec, day};
+    }
+  }
+  return null;
+}
+function ensureWeekCacheForDate(dateStr){
+  let found=findWeekCacheEntryForDate(dateStr);
+  if(found) return found;
+  const dt=new Date(dateStr+'T00:00:00');
+  const weekStart=new Date(dt);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  const goals=getGoals();
+  const activeGoal=goals.find(g=>g.id===getActiveGoalId('planner'))||goals[0];
+  const wantMock=!!(activeGoal&&activeGoal.mockTest);
+  const plannedRevisions=Math.max(0, parseInt((activeGoal&&activeGoal.revisionCount)||0,10)||0);
+  const cacheKey=toDateKey(weekStart)+'::'+(activeGoal?activeGoal.id:'default')+'::mock'+(wantMock?1:0)+'::rev'+plannedRevisions;
+  const cache=getWeekPlanCache();
+  cache[cacheKey]={
+    plan: buildBlankWeekPlan(weekStart),
+    meta: {testDate:(activeGoal&&activeGoal.date)||'', totalHours:0, totalTopics:0, testSubjects:[], weekStart:toDateKey(weekStart), weekLabel:formatWeekRange(weekStart), createdAt:new Date().toISOString()}
+  };
+  saveWeekPlanCache(cache);
+  const day=cache[cacheKey].plan.days.find(d=>d.date===dateStr);
+  return {cacheKey, rec:cache[cacheKey], day};
+}
+function dpMirrorAddToWeekly(task, dateStr){
+  if(!task || task.sub===undefined || task.ci===undefined || task.ti===undefined) return;
+  try{
+    const entry=ensureWeekCacheForDate(dateStr);
+    if(!entry || !entry.day) return;
+    if(!Array.isArray(entry.day.sessions)) entry.day.sessions=[];
+    const exists=entry.day.sessions.some(s=>s.dpTaskId===task.id);
+    if(exists) return;
+    const ch=CHAPTERS[task.sub] && CHAPTERS[task.sub][task.ci];
+    if(!ch) return;
+    const topicName=ch.topics[task.ti]||task.topicName||'Task';
+    const expected=Math.max(0.5, parseFloat(getSubjectDefaultHours(task.sub,task.ci,task.ti))||0.5);
+    const session={
+      subject:task.sub, ci:task.ci, ti:task.ti,
+      label:task.sub.charAt(0).toUpperCase()+task.sub.slice(1),
+      chName:ch.name, topicName,
+      goalHours:expected, subjectHours:getSubjectEstimatedHours(task.sub,task.ci,task.ti),
+      task:topicName+(task.source==='goal'?' — from Daily Plan (goal)':' — from Daily Plan'),
+      duration:expected+'h', type:'new', lastPct:parseInt(task.pct)||0,
+      fromTime:task.fromTime||'', toTime:task.toTime||'',
+      dpTaskId:task.id, addedFromDailyPlan:true
+    };
+    entry.day.sessions.push(session);
+    const cache=getWeekPlanCache();
+    cache[entry.cacheKey]=entry.rec;
+    saveWeekPlanCache(cache);
+    refreshWeeklyPlanIfOpen();
+  }catch(e){ console.error('dpMirrorAddToWeekly',e); }
+}
+function dpMirrorRemoveFromWeekly(taskId, dateStr){
+  try{
+    const cache=getWeekPlanCache();
+    let changed=false;
+    Object.keys(cache).forEach(k=>{
+      const rec=cache[k];
+      if(!rec || !rec.plan || !Array.isArray(rec.plan.days)) return;
+      rec.plan.days.forEach(d=>{
+        if(d.date!==dateStr || !Array.isArray(d.sessions)) return;
+        const before=d.sessions.length;
+        d.sessions = d.sessions.filter(s=>s.dpTaskId!==taskId);
+        if(d.sessions.length!==before) changed=true;
+      });
+    });
+    if(changed){ saveWeekPlanCache(cache); refreshWeeklyPlanIfOpen(); }
+  }catch(e){ console.error('dpMirrorRemoveFromWeekly',e); }
+}
+function wpMirrorAddToDaily(sub, ci, ti, dateStr, opts){
+  if(sub===undefined || ci===undefined || ti===undefined || !dateStr) return;
+  try{
+    const ciInt=parseInt(ci), tiInt=parseInt(ti);
+    if(isNaN(ciInt) || isNaN(tiInt)) return;
+    const ch=CHAPTERS[sub] && CHAPTERS[sub][ciInt];
+    if(!ch) return;
+    const tasks=dpGetTasks(dateStr);
+    const dupe=tasks.find(t=>t.sub===sub && parseInt(t.ci)===ciInt && parseInt(t.ti)===tiInt);
+    if(dupe) return;
+    const topicName=ch.topics[tiInt]||'Task';
+    const activeGoal=(function(){ const g=getGoals(); return g.find(x=>x.id===getActiveGoalId('planner'))||g[0]||null; })();
+    const task={
+      id:'dp-wp-'+Date.now()+'-'+Math.floor(Math.random()*1000),
+      source: activeGoal ? 'goal' : 'subject',
+      goalId: activeGoal ? activeGoal.id : '',
+      sub, ci:ciInt, ti:tiInt,
+      topicName, chapterName: ch.name,
+      fromTime:(opts&&opts.fromTime)||'', toTime:(opts&&opts.toTime)||'',
+      pct: (opts&&parseInt(opts.pct))||0,
+      addedFromWeeklyPlan:true
+    };
+    tasks.push(task);
+    dpSetTasks(dateStr, tasks);
+    refreshDailyPlanIfOpen();
+  }catch(e){ console.error('wpMirrorAddToDaily',e); }
+}
+function wpMirrorRemoveFromDaily(sub, ci, ti, dateStr){
+  if(!dateStr) return;
+  try{
+    const ciInt=parseInt(ci), tiInt=parseInt(ti);
+    const tasks=dpGetTasks(dateStr);
+    const next=tasks.filter(t=> !(t.sub===sub && parseInt(t.ci)===ciInt && parseInt(t.ti)===tiInt));
+    if(next.length !== tasks.length){
+      dpSetTasks(dateStr, next);
+      refreshDailyPlanIfOpen();
+    }
+  }catch(e){ console.error('wpMirrorRemoveFromDaily',e); }
+}
+function wpUpdateDailyPlanPct(sub, ci, ti, dateStr, pct){
+  if(!dateStr) return;
+  try{
+    const ciInt=parseInt(ci), tiInt=parseInt(ti);
+    const p=Math.max(0,Math.min(100,parseInt(pct)||0));
+    const tasks=dpGetTasks(dateStr);
+    let changed=false;
+    tasks.forEach(t=>{
+      if(t.sub===sub && parseInt(t.ci)===ciInt && parseInt(t.ti)===tiInt){
+        if((parseInt(t.pct)||0) !== p){ t.pct = p; changed=true; }
+      }
+    });
+    if(changed){ dpSetTasks(dateStr, tasks); refreshDailyPlanIfOpen(); }
+  }catch(e){}
+}
+/* End of Daily <==> Weekly mirror helpers */
+
+function confirmDailyPlanTask(){
+  const ds=document.getElementById('dp-picker').value||dpTodayStr();
+  const src=document.getElementById('dp-source').value;
+  const from=document.getElementById('dp-from').value||'';
+  const to=document.getElementById('dp-to').value||'';
+  if(from && to && from>=to){ showToast('“To” time must be later than “From” time'); return; }
+  let sub,ci,ti,goalId='';
+  if(src==='goal'){
+    const raw=document.getElementById('dp-goal-topic').value;
+    if(!raw){ showToast('Select a goal topic'); return; }
+    const parts=raw.split('::');
+    sub=parts[0]; ci=parseInt(parts[1],10); ti=parseInt(parts[2],10);
+    goalId=document.getElementById('dp-goal').value||'';
+  } else {
+    sub=document.getElementById('dp-subject').value;
+    ci=parseInt(document.getElementById('dp-chapter').value,10);
+    ti=parseInt(document.getElementById('dp-topic').value,10);
+  }
+  if(!sub||isNaN(ci)||isNaN(ti)){ showToast('Select a valid task'); return; }
+  const ch=CHAPTERS[sub][ci]; const topicName=ch.topics[ti];
+  const task={
+    id:'dp-'+Date.now()+'-'+Math.floor(Math.random()*1000),
+    source: src==='goal'?'goal':'subject',
+    goalId,
+    sub, ci, ti,
+    topicName, chapterName: ch.name,
+    fromTime: from, toTime: to,
+    pct: 0
+  };
+  const tasks=dpGetTasks(ds); tasks.push(task); dpSetTasks(ds,tasks);
+  dpMirrorAddToWeekly(task, ds);
+  document.getElementById('dp-task-modal').remove();
+  renderDailyPlan();
+  dpShowSavedPopup('Task added to Daily Plan');
+}
+
+
+/* ═══════════════════════════════════
+   CALENDAR PAGE
+   - Regular weekly commitments: shared with Weekly Plan's Hours & Commitments modal
+     (stored in wp-state.commitments).
+   - Ad-hoc commitments: date-specific, stored in safeLS 'studydesk-adhoc-v1'.
+   Both types block time in Daily Plan (buildBlockedMinuteSet was patched).
+═══════════════════════════════════ */
+const ADHOC_KEY = 'studydesk-adhoc-v1';
+function getAdhocAll(){
+  try{ const s=safeLS.getItem(ADHOC_KEY); return s ? JSON.parse(s) : []; }
+  catch(e){ return []; }
+}
+function saveAdhocAll(list){ safeLS.setItem(ADHOC_KEY, JSON.stringify(list||[])); }
+function getAdhocForDate(dateStr){
+  if(!dateStr) return [];
+  return getAdhocAll().filter(c => c && c.date === dateStr);
+}
+function _calEscape(s){
+  return String(s||'').replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function renderCalendarPage(){
+  const container = document.getElementById('calendar-content');
+  if(!container) return;
+  const wp = getWPState();
+  const adhocList = getAdhocAll().slice().sort((a,b)=>{
+    const da = (a.date||'')+' '+(a.from||'');
+    const db = (b.date||'')+' '+(b.from||'');
+    return da.localeCompare(db);
+  });
+  const upcoming = adhocList.filter(c => (c.date||'') >= todayStr());
+  const past = adhocList.filter(c => (c.date||'') < todayStr());
+  const netHours = getNetHoursPerDow();
+  const freeSummary = DAY_NAMES.map((dn,d)=>{
+    return '<div style="text-align:center;padding:6px 4px;background:var(--surface);border:1px solid var(--border);border-radius:8px">'
+      + '<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">'+dn+'</div>'
+      + '<div style="font-size:14px;font-weight:600;color:var(--text);margin-top:3px">'+formatHoursValue(netHours[d]||0)+'h</div>'
+      + '<div style="font-size:10px;color:var(--text3);margin-top:2px">free</div>'
+      + '</div>';
+  }).join('');
+  let html = '';
+  html += '<div class="card" style="margin-bottom:16px">'
+    + '<div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Free Hours per Day (Auto-calculated after commitments)</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">'+freeSummary+'</div>'
+    + '<div style="font-size:11px;color:var(--text3);margin-top:8px">Auto-calculated from regular commitments below. Ad-hoc commitments only affect their specific date.</div>'
+    + '</div>';
+  html += '<div class="card" style="margin-bottom:16px">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap">'
+    +   '<div><div style="font-size:15px;font-weight:600;color:var(--text)">Regular Weekly Commitments</div>'
+    +   '<div style="font-size:12px;color:var(--text2);margin-top:3px">Recurring every week — school, tuition, sleep, meals.</div></div>'
+    +   '<button class="btn-p" style="font-size:12px;padding:6px 14px" onclick="calAddRegular()">+ Add Regular</button>'
+    + '</div>'
+    + '<div id="cal-regular-list"></div>'
+    + '</div>';
+  html += '<div class="card" style="margin-bottom:16px">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap">'
+    +   '<div><div style="font-size:15px;font-weight:600;color:var(--text)">Ad-hoc Commitments</div>'
+    +   '<div style="font-size:12px;color:var(--text2);margin-top:3px">One-off events on a specific date — doctor visit, family function, exam.</div></div>'
+    +   '<button class="btn-p" style="font-size:12px;padding:6px 14px" onclick="calAddAdhoc()">+ Add Ad-hoc</button>'
+    + '</div>'
+    + '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Upcoming ('+upcoming.length+')</div>'
+    + '<div id="cal-adhoc-upcoming"></div></div>';
+  if(past.length){
+    html += '<div><div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Past ('+past.length+')</div>'
+      + '<div id="cal-adhoc-past"></div></div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+  calRenderRegularList();
+  calRenderAdhocList('cal-adhoc-upcoming', upcoming, false);
+  if(past.length) calRenderAdhocList('cal-adhoc-past', past, true);
+}
+function calRenderRegularList(){
+  const el = document.getElementById('cal-regular-list');
+  if(!el) return;
+  const wp = getWPState();
+  const list = wp.commitments || [];
+  if(!list.length){
+    el.innerHTML = '<div class="goal-list-empty">No regular commitments yet. Click <b>+ Add Regular</b> to add one.</div>';
+    return;
+  }
+  el.innerHTML = list.map((c,i)=>{
+    const durH = formatHoursValue(getCommitmentDurationHours(c));
+    return '<div style="display:grid;grid-template-columns:minmax(160px,1.4fr) 100px 100px 60px minmax(200px,2fr) 80px;gap:10px;align-items:center;padding:10px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px">'
+      + '<input type="text" value="'+_calEscape(c.label||'')+'" onchange="calUpdateRegular('+i+',\'label\',this.value)" style="border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:13px;font-family:\'DM Sans\',sans-serif;background:var(--surface);color:var(--text)" placeholder="Label (e.g. School)">'
+      + '<button type="button" class="tp-trigger'+(c.from?'':' tp-empty')+'" onclick="calOpenTimePicker(\'regular\','+i+',\'from\',\''+_calEscape(c.from||'')+'\')">'+(tpFormatDisplay(c.from)||'Set time')+'</button>'
+      + '<button type="button" class="tp-trigger'+(c.to?'':' tp-empty')+'" onclick="calOpenTimePicker(\'regular\','+i+',\'to\',\''+_calEscape(c.to||'')+'\')">'+(tpFormatDisplay(c.to)||'Set time')+'</button>'
+      + '<div style="text-align:center;font-size:12px;color:var(--text2)">'+durH+'h</div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap">'
+        + DAY_NAMES.map((dn,d)=>'<label style="display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--text2);cursor:pointer"><input type="checkbox" '+((c.days||[]).includes(d)?'checked':'')+' onchange="calToggleRegularDay('+i+','+d+',this.checked)" style="cursor:pointer;margin:0">'+dn+'</label>').join('')
+      + '</div>'
+      + '<button class="daily-list-remove" onclick="calRemoveRegular('+i+')">Remove</button>'
+      + '</div>';
+  }).join('');
+}
+function calRenderAdhocList(elId, list, isPast){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  if(!list.length){
+    el.innerHTML = isPast ? '' : '<div class="goal-list-empty" style="padding:16px">No upcoming ad-hoc commitments. Click <b>+ Add Ad-hoc</b> to add one.</div>';
+    return;
+  }
+  el.innerHTML = list.map(c=>{
+    const durH = formatHoursValue(getCommitmentDurationHours(c));
+    const dateLabel = c.date ? new Date(c.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}) : '—';
+    return '<div style="display:grid;grid-template-columns:130px minmax(160px,1.4fr) 100px 100px 60px 1fr 80px;gap:10px;align-items:center;padding:10px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px;'+(isPast?'opacity:.7':'')+'">'
+      + '<input type="date" value="'+_calEscape(c.date||'')+'" onchange="calUpdateAdhoc(\''+c.id+'\',\'date\',this.value)" style="border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;font-family:\'DM Sans\',sans-serif;background:var(--surface);color:var(--text)">'
+      + '<input type="text" value="'+_calEscape(c.label||'')+'" onchange="calUpdateAdhoc(\''+c.id+'\',\'label\',this.value)" style="border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:13px;font-family:\'DM Sans\',sans-serif;background:var(--surface);color:var(--text)" placeholder="Label">'
+      + '<button type="button" class="tp-trigger'+(c.from?'':' tp-empty')+'" onclick="calOpenTimePicker(\'adhoc\',\''+c.id+'\',\'from\',\''+_calEscape(c.from||'')+'\')">'+(tpFormatDisplay(c.from)||'Set time')+'</button>'
+      + '<button type="button" class="tp-trigger'+(c.to?'':' tp-empty')+'" onclick="calOpenTimePicker(\'adhoc\',\''+c.id+'\',\'to\',\''+_calEscape(c.to||'')+'\')">'+(tpFormatDisplay(c.to)||'Set time')+'</button>'
+      + '<div style="text-align:center;font-size:12px;color:var(--text2)">'+durH+'h</div>'
+      + '<input type="text" value="'+_calEscape(c.notes||'')+'" onchange="calUpdateAdhoc(\''+c.id+'\',\'notes\',this.value)" style="border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;font-family:\'DM Sans\',sans-serif;background:var(--surface);color:var(--text)" placeholder="Notes (optional) — '+_calEscape(dateLabel)+'">'
+      + '<button class="daily-list-remove" onclick="calRemoveAdhoc(\''+c.id+'\')">Remove</button>'
+      + '</div>';
+  }).join('');
+}
+function calAddRegular(){
+  const wp = getWPState();
+  wp.commitments.push(syncCommitmentHours({label:'New commitment',days:[1,2,3,4,5],from:'09:00',to:'10:00',hours:1}));
+  wp.dayHours = getComputedFreeHoursPerDow(wp);
+  saveWPState(wp);
+  renderCalendarPage();
+  showToast('Regular commitment added');
+}
+function calUpdateRegular(i, field, val){
+  const wp = getWPState();
+  if(!wp.commitments[i]) return;
+  wp.commitments[i][field] = val;
+  syncCommitmentHours(wp.commitments[i]);
+  wp.dayHours = getComputedFreeHoursPerDow(wp);
+  saveWPState(wp);
+  renderCalendarPage();
+}
+function calToggleRegularDay(i, d, checked){
+  const wp = getWPState();
+  if(!wp.commitments[i]) return;
+  const days = wp.commitments[i].days || [];
+  if(checked){ if(!days.includes(d)) days.push(d); wp.commitments[i].days = days; }
+  else { wp.commitments[i].days = days.filter(x=>x!==d); }
+  wp.dayHours = getComputedFreeHoursPerDow(wp);
+  saveWPState(wp);
+  renderCalendarPage();
+}
+function calRemoveRegular(i){
+  if(!confirm('Remove this regular commitment?')) return;
+  const wp = getWPState();
+  wp.commitments.splice(i,1);
+  wp.dayHours = getComputedFreeHoursPerDow(wp);
+  saveWPState(wp);
+  renderCalendarPage();
+  showToast('Regular commitment removed');
+}
+function calAddAdhoc(){
+  const list = getAdhocAll();
+  list.push({
+    id: 'ah-'+Date.now()+'-'+Math.floor(Math.random()*1000),
+    label: 'New commitment',
+    date: todayStr(),
+    from: '09:00',
+    to: '10:00',
+    notes: ''
+  });
+  saveAdhocAll(list);
+  renderCalendarPage();
+  showToast('Ad-hoc commitment added');
+}
+function calUpdateAdhoc(id, field, val){
+  const list = getAdhocAll();
+  const idx = list.findIndex(c=>c.id===id);
+  if(idx<0) return;
+  list[idx][field] = val;
+  saveAdhocAll(list);
+  renderCalendarPage();
+}
+function calRemoveAdhoc(id){
+  if(!confirm('Remove this ad-hoc commitment?')) return;
+  const list = getAdhocAll().filter(c=>c.id!==id);
+  saveAdhocAll(list);
+  renderCalendarPage();
+  showToast('Ad-hoc commitment removed');
+}
+
+/* ═══════════════════════════════════
+   CLOCK TIME PICKER
+   Provides a simple clock-face UI for choosing hour and minute.
+   openClockPicker(currentValue, onSelect) opens the picker.
+   calOpenTimePicker(kind, idOrIdx, field, currentVal) is the dispatcher
+   used by the Calendar rows.
+═══════════════════════════════════ */
+let _tp = null;
+function tpFormatDisplay(hhmm){
+  if(!hhmm || !hhmm.includes(':')) return hhmm || '';
+  const parts = hhmm.split(':');
+  const h = parseInt(parts[0],10);
+  const m = parseInt(parts[1],10);
+  if(isNaN(h) || isNaN(m)) return hhmm;
+  const hh = ((h+11)%12)+1;
+  const ap = h < 12 ? 'AM' : 'PM';
+  return hh+':'+String(m).padStart(2,'0')+' '+ap;
+}
+function openClockPicker(currentValue, onSelect){
+  let h24 = 9, m = 0;
+  if(currentValue && currentValue.includes(':')){
+    const parts = currentValue.split(':');
+    h24 = parseInt(parts[0],10);
+    m = parseInt(parts[1],10);
+    if(isNaN(h24)) h24 = 9;
+    if(isNaN(m)) m = 0;
+  }
+  const ampm = h24 >= 12 ? 'PM' : 'AM';
+  let h12 = h24 % 12; if(h12 === 0) h12 = 12;
+  _tp = { h: h12, m: m, ampm: ampm, mode: 'hour', onSelect: onSelect };
+  const old = document.getElementById('tp-overlay');
+  if(old) old.remove();
+  const ov = document.createElement('div');
+  ov.id = 'tp-overlay';
+  ov.className = 'tp-overlay';
+  ov.innerHTML = ''
+    + '<div class="tp-box">'
+    +   '<div class="tp-header">'
+    +     '<div class="tp-display">'
+    +       '<button class="tp-unit-btn active" id="tp-h-btn" onclick="tpSetMode(\'hour\')">'+String(_tp.h)+'</button>'
+    +       '<span class="tp-sep">:</span>'
+    +       '<button class="tp-unit-btn" id="tp-m-btn" onclick="tpSetMode(\'minute\')">'+String(_tp.m).padStart(2,'0')+'</button>'
+    +     '</div>'
+    +     '<div class="tp-ampm-row">'
+    +       '<button class="tp-ampm-btn'+(_tp.ampm==='AM'?' active':'')+'" id="tp-am" onclick="tpSetAmpm(\'AM\')">AM</button>'
+    +       '<button class="tp-ampm-btn'+(_tp.ampm==='PM'?' active':'')+'" id="tp-pm" onclick="tpSetAmpm(\'PM\')">PM</button>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="tp-clock" id="tp-clock">'
+    +     '<div class="tp-hand" id="tp-hand"><div class="tp-hand-tip"></div></div>'
+    +     '<div class="tp-center"></div>'
+    +   '</div>'
+    +   '<div class="tp-actions">'
+    +     '<button class="tp-btn tp-btn-cancel" onclick="tpClose(false)">Cancel</button>'
+    +     '<button class="tp-btn" onclick="tpClose(true)">OK</button>'
+    +   '</div>'
+    + '</div>';
+  ov.addEventListener('click', function(e){ if(e.target === ov) tpClose(false); });
+  document.body.appendChild(ov);
+  tpRender();
+}
+function tpSetMode(mode){ if(_tp){ _tp.mode = mode; tpRender(); } }
+function tpSetAmpm(v){ if(_tp){ _tp.ampm = v; tpRender(); } }
+function tpRender(){
+  if(!_tp) return;
+  const hBtn = document.getElementById('tp-h-btn');
+  const mBtn = document.getElementById('tp-m-btn');
+  if(hBtn){ hBtn.textContent = String(_tp.h); hBtn.classList.toggle('active', _tp.mode==='hour'); }
+  if(mBtn){ mBtn.textContent = String(_tp.m).padStart(2,'0'); mBtn.classList.toggle('active', _tp.mode==='minute'); }
+  const amBtn = document.getElementById('tp-am');
+  const pmBtn = document.getElementById('tp-pm');
+  if(amBtn) amBtn.classList.toggle('active', _tp.ampm==='AM');
+  if(pmBtn) pmBtn.classList.toggle('active', _tp.ampm==='PM');
+  const clock = document.getElementById('tp-clock');
+  if(!clock) return;
+  Array.prototype.slice.call(clock.querySelectorAll('.tp-num')).forEach(function(n){ n.remove(); });
+  const cx = 130, cy = 130, r = 100;
+  if(_tp.mode === 'hour'){
+    for(let i = 1; i <= 12; i++){
+      const angle = (i * 30 - 90) * Math.PI / 180;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      const div = document.createElement('div');
+      div.className = 'tp-num' + (i === _tp.h ? ' selected' : '');
+      div.style.left = x + 'px';
+      div.style.top = y + 'px';
+      div.textContent = i;
+      div.onclick = (function(hh){ return function(){ _tp.h = hh; _tp.mode = 'minute'; tpRender(); }; })(i);
+      clock.appendChild(div);
+    }
+    const ang = (_tp.h * 30 - 90);
+    const hand = document.getElementById('tp-hand');
+    if(hand){ hand.style.width = r + 'px'; hand.style.transform = 'rotate(' + ang + 'deg)'; }
+  } else {
+    for(let i = 0; i < 12; i++){
+      const min = i * 5;
+      const angle = (min * 6 - 90) * Math.PI / 180;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      const div = document.createElement('div');
+      div.className = 'tp-num' + (min === _tp.m ? ' selected' : '');
+      div.style.left = x + 'px';
+      div.style.top = y + 'px';
+      div.textContent = String(min).padStart(2,'0');
+      div.onclick = (function(mm){ return function(){ _tp.m = mm; tpRender(); }; })(min);
+      clock.appendChild(div);
+    }
+    const ang = (_tp.m * 6 - 90);
+    const hand = document.getElementById('tp-hand');
+    if(hand){ hand.style.width = r + 'px'; hand.style.transform = 'rotate(' + ang + 'deg)'; }
+  }
+}
+function tpClose(save){
+  if(save && _tp && typeof _tp.onSelect === 'function'){
+    let h24 = _tp.h;
+    if(_tp.ampm === 'PM' && h24 !== 12) h24 += 12;
+    if(_tp.ampm === 'AM' && h24 === 12) h24 = 0;
+    const val = String(h24).padStart(2,'0') + ':' + String(_tp.m).padStart(2,'0');
+    try { _tp.onSelect(val); } catch(e){ console.error('tpClose onSelect',e); }
+  }
+  const ov = document.getElementById('tp-overlay');
+  if(ov) ov.remove();
+  _tp = null;
+}
+function calOpenTimePicker(kind, idOrIdx, field, currentVal){
+  openClockPicker(currentVal, function(newVal){
+    if(kind === 'regular'){
+      calUpdateRegular(idOrIdx, field, newVal);
+    } else if(kind === 'adhoc'){
+      calUpdateAdhoc(idOrIdx, field, newVal);
+    }
+  });
+}
+
+/* ═══════════════════════════════════
+   AUTO-PLAN BACKLOGS
+   Reads current backlogs (from Backlogs page), calculates available time per day
+   from the Calendar (regular + ad-hoc commitments), and distributes topics across
+   today + next 6 days. Assigns to BOTH Weekly Plan (cache) and Daily Plan (tasks
+   with fromTime/toTime).
+   - Previous auto-planned entries are cleared first, so re-clicking regenerates.
+   - User's manual Daily Plan tasks are preserved (only tasks with
+     autoBacklogPlanned=true are removed).
+═══════════════════════════════════ */
+function minutesToHHMM(mins){
+  const h = Math.floor(mins/60), m = mins%60;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+function refreshPlanFromBacklogs(){
+  const btnWP = document.getElementById('refresh-plan-btn');
+  if(btnWP){ btnWP.textContent='⟳ Planning...'; btnWP.disabled=true; }
+  try{
+    // 1. Compute date range: today + next 6 days
+    const today = new Date(); today.setHours(0,0,0,0);
+    const weekStart = new Date(today);
+    const dateKeys = [];
+    for(let i=0;i<7;i++){ const d=new Date(weekStart); d.setDate(d.getDate()+i); dateKeys.push(toDateKey(d)); }
+
+    // 2. Wipe any previous auto-backlog tasks from Daily Plan for these dates
+    dateKeys.forEach(ds=>{
+      const tasks = dpGetTasks(ds);
+      const filtered = tasks.filter(t=>!t.autoBacklogPlanned);
+      if(filtered.length!==tasks.length) dpSetTasks(ds, filtered);
+    });
+
+    // 3. Get backlogs and sort by priority
+    const backlogs = getBacklogTopics();
+    if(!backlogs.length){
+      showToast('No backlogs to plan');
+      // Still refresh the weekly view so an empty plan is shown
+      const plan = buildBlankWeekPlan(weekStart);
+      plan.days.forEach(d=>{ d.note = d.net<=0?'No study time available':'No backlogs'; });
+      const activeGoal = (getGoals().find(g=>g.id===getActiveGoalId('planner')))||getGoals()[0];
+      const cache = getWeekPlanCache();
+      const cacheKey = toDateKey(weekStart)+'::'+(activeGoal?activeGoal.id:'default')+'::backlogs';
+      cache[cacheKey] = {plan, meta:{testDate:'', totalHours:plan.days.reduce((a,d)=>a+d.net,0), totalTopics:0, testSubjects:[], weekStart:toDateKey(weekStart), weekLabel:formatWeekRange(weekStart), createdAt:new Date().toISOString(), backlogPlan:true}};
+      saveWeekPlanCache(cache);
+      const weeklyPage = document.getElementById('page-weekly');
+      if(weeklyPage && !weeklyPage.classList.contains('hidden')) renderWeekly();
+      refreshDailyPlanIfOpen();
+      return;
+    }
+    backlogs.sort((a,b)=>{
+      const asch = (a.inSchool||a.inTuition) ? 1 : 0;
+      const bsch = (b.inSchool||b.inTuition) ? 1 : 0;
+      if(asch!==bsch) return bsch-asch;
+      const aw = ((CHAPTERS[a.sub]&&CHAPTERS[a.sub][a.ci])||{}).weight==='high'?2:1;
+      const bw = ((CHAPTERS[b.sub]&&CHAPTERS[b.sub][b.ci])||{}).weight==='high'?2:1;
+      if(aw!==bw) return bw-aw;
+      return a.sub.localeCompare(b.sub);
+    });
+
+    // 4. Build plan and assign topics
+    const plan = buildBlankWeekPlan(weekStart);
+    let topicIdx = 0;
+    let plannedCount = 0;
+
+    plan.days.forEach((day,i)=>{
+      if(day.isPast || day.net<=0){
+        day.sessions = [];
+        day.note = day.net<=0 ? 'No study time available' : 'Past day';
+        return;
+      }
+      const bounds = getTimelineBounds(day.date);
+      const blocked = buildBlockedMinuteSet(day.date, bounds);
+      const allMinutes = buildTimelineMinuteList(bounds);
+      const occupied = {};
+      const sessions = [];
+      let hoursLeft = day.net;
+
+      while(hoursLeft>=0.5 && topicIdx<backlogs.length){
+        const b = backlogs[topicIdx];
+        const expected = Math.max(0.5, parseFloat(getSubjectDefaultHours(b.sub, b.ci, b.ti))||0.5);
+        const dur = Math.min(expected, hoursLeft);
+        if(dur<0.5){ topicIdx++; continue; }
+        const slotCount = Math.max(1, Math.round((dur*60)/DAILY_SLOT_MINUTES));
+
+        // Find first slot minute that's not blocked or occupied
+        let startMinute = -1;
+        for(let mi=0; mi<allMinutes.length; mi++){
+          const mm = allMinutes[mi];
+          if(!blocked.has(mm) && !occupied[mm]){ startMinute = mm; break; }
+        }
+        if(startMinute<0) break;
+
+        const assigned = allocateSlotsFromMinute(allMinutes, blocked, occupied, startMinute, slotCount);
+        if(!assigned || assigned.length<slotCount) break;
+
+        const fromTime = minutesToHHMM(assigned[0]);
+        const toTime   = minutesToHHMM(assigned[assigned.length-1] + DAILY_SLOT_MINUTES);
+
+        // Weekly Plan session
+        const session = {
+          subject: b.sub, ci: b.ci, ti: b.ti,
+          label: b.sub.charAt(0).toUpperCase()+b.sub.slice(1),
+          chName: b.chapterName, topicName: b.topicName,
+          goalHours: dur, subjectHours: getSubjectEstimatedHours(b.sub, b.ci, b.ti),
+          task: b.topicName + ' — auto-planned from backlog',
+          duration: dur+'h', type: 'new', lastPct: 0,
+          fromTime, toTime,
+          autoBacklogPlanned: true
+        };
+        sessions.push(session);
+        assigned.forEach(m=>{ occupied[m]=true; });
+
+        // Daily Plan task
+        try{
+          const tasks = dpGetTasks(day.date);
+          tasks.push({
+            id: 'dp-auto-'+Date.now()+'-'+plannedCount+'-'+Math.floor(Math.random()*1000),
+            source: 'subject',
+            goalId: '',
+            sub: b.sub, ci: b.ci, ti: b.ti,
+            topicName: b.topicName, chapterName: b.chapterName,
+            fromTime, toTime,
+            pct: 0,
+            autoBacklogPlanned: true
+          });
+          dpSetTasks(day.date, tasks);
+        }catch(e){}
+
+        hoursLeft -= dur;
+        topicIdx++;
+        plannedCount++;
+      }
+      day.sessions = sessions;
+      day.note = sessions.length ? (sessions.length+' backlog task'+(sessions.length>1?'s':'')+' planned') : 'Rest — no backlogs assigned';
+    });
+
+    // 5. Save plan cache — clear any other cache entries for this week first
+    const activeGoal = (getGoals().find(g=>g.id===getActiveGoalId('planner')))||getGoals()[0];
+    const weekKeyStr = toDateKey(weekStart);
+    const cache = getWeekPlanCache();
+    Object.keys(cache).forEach(k=>{ if(k.startsWith(weekKeyStr+'::')) delete cache[k]; });
+    const cacheKey = weekKeyStr+'::'+(activeGoal?activeGoal.id:'default')+'::backlogs';
+    cache[cacheKey] = {
+      plan,
+      meta: {
+        testDate: (activeGoal&&activeGoal.date)||'',
+        totalHours: plan.days.reduce((a,d)=>a+(parseFloat(d.net)||0),0).toFixed(1),
+        totalTopics: backlogs.length,
+        testSubjects: [...new Set(backlogs.map(b=>b.sub))],
+        weekStart: weekKeyStr,
+        weekLabel: formatWeekRange(weekStart),
+        createdAt: new Date().toISOString(),
+        backlogPlan: true
+      }
+    };
+    saveWeekPlanCache(cache);
+
+    // 6. Refresh visible views
+    const weeklyPage = document.getElementById('page-weekly');
+    if(weeklyPage && !weeklyPage.classList.contains('hidden')){
+      const meta = cache[cacheKey].meta;
+      renderWeeklyPlanOutput(plan, meta.testDate, meta.totalHours, meta.totalTopics, meta.testSubjects, meta.weekStart, meta.weekLabel);
+    }
+    refreshDailyPlanIfOpen();
+
+    const remaining = backlogs.length - topicIdx;
+    const msg = '✓ '+plannedCount+' backlog task'+(plannedCount!==1?'s':'')+' auto-planned across today + next 6 days'
+      + (remaining>0 ? ' — '+remaining+' left over (not enough time)' : '');
+    showToast(msg);
+  }catch(e){
+    console.error('refreshPlanFromBacklogs error', e);
+    showToast('Auto-plan failed — see console');
+  }finally{
+    if(btnWP){ btnWP.textContent='⟳ Refresh Plan'; btnWP.disabled=false; }
+  }
 }
 </script>
 
