@@ -1871,28 +1871,59 @@ function normalizeDailySlotList(val){
   return isNaN(single)?[]:[single];
 }
 function buildBlockedMinuteSet(dateStr,bounds){
+  /* v17 — Correctly handles commitments that wrap around midnight (e.g. sleep 22:00→06:00).
+     For each commitment, block both the pre-midnight portion (from→24:00) on THIS day AND
+     the post-midnight portion (00:00→to) on THIS day (which represents the previous night's
+     sleep continuing into this morning). */
   const blocked=new Set();
+  const addRange = (fromMin, toMin) => {
+    // Normalize range within [0, 24*60)
+    if(fromMin===null || toMin===null) return;
+    // Iterate the range in 30-min steps, blocking each slot that falls within the day
+    let cursor = fromMin;
+    const endExclusive = toMin;
+    while(cursor < endExclusive){
+      // Snap to 30-min slot boundary
+      const slot = Math.floor(cursor / DAILY_SLOT_MINUTES) * DAILY_SLOT_MINUTES;
+      if(slot >= bounds.minMinute && slot < bounds.maxMinute){
+        blocked.add(slot);
+      }
+      cursor += DAILY_SLOT_MINUTES;
+    }
+  };
+  const addCommitment = (c) => {
+    const from = parseTimeToMinutes(c.from);
+    const to   = parseTimeToMinutes(c.to);
+    if(from === null) return;
+    if(to === null){
+      // Fall back to duration in hours
+      const durMin = Math.max(30, Math.round((getCommitmentDurationHours(c))*60));
+      let endMin = from + durMin;
+      if(endMin <= 24*60){
+        addRange(from, endMin);
+      } else {
+        // Wraps midnight
+        addRange(from, 24*60);
+        addRange(0, endMin - 24*60);
+      }
+      return;
+    }
+    if(to > from){
+      // Same-day range
+      addRange(from, to);
+    } else if(to < from){
+      // Wraps midnight — block from `from` to midnight AND from midnight to `to`.
+      // Both apply to THIS date because a daily sleep commitment affects
+      // both ends of the day.
+      addRange(from, 24*60);
+      addRange(0, to);
+    }
+    // to === from  → 0-length, ignore
+  };
   const wp=getWPState();
   const dow=new Date(dateStr+'T00:00:00').getDay();
-  (wp.commitments||[]).filter(c=>(c.days||[]).includes(dow)).forEach(c=>{
-    const from=parseTimeToMinutes(c.from);
-    const durSlots=Math.max(1, Math.round((getCommitmentDurationHours(c)*60)/DAILY_SLOT_MINUTES));
-    if(from===null) return;
-    for(let i=0;i<durSlots;i++){
-      const minute=from + i*DAILY_SLOT_MINUTES;
-      if(minute>=bounds.minMinute && minute<bounds.maxMinute) blocked.add(minute);
-    }
-  });
-  // Ad-hoc commitments for this specific date
-  getAdhocForDate(dateStr).forEach(c=>{
-    const from=parseTimeToMinutes(c.from);
-    const durSlots=Math.max(1, Math.round((getCommitmentDurationHours(c)*60)/DAILY_SLOT_MINUTES));
-    if(from===null) return;
-    for(let i=0;i<durSlots;i++){
-      const minute=from + i*DAILY_SLOT_MINUTES;
-      if(minute>=bounds.minMinute && minute<bounds.maxMinute) blocked.add(minute);
-    }
-  });
+  (wp.commitments||[]).filter(c=>(c.days||[]).includes(dow)).forEach(addCommitment);
+  getAdhocForDate(dateStr).forEach(addCommitment);
   return blocked;
 }
 function buildTimelineMinuteList(bounds){
@@ -4587,10 +4618,21 @@ function renderDailyPlan(){
     // v13 — Goal tag when task is in any goal's scope; Manual otherwise
     const sourceTag = goalNameForSubject ? 'Goal' : 'Manual';
     const subLine = [t.chapterName, sourceTag].filter(Boolean).map(dpEscape).join(' · ');
-    // v13 — Hours cell (Goal expected hours preferred, otherwise Subject hours)
-    const hrsVal = dpGetTaskHours(t);
+    // v17 — Hours cell:
+    //   • If task has a fromTime/toTime range, show the ACTUAL allocated hours (to − from).
+    //   • Otherwise, fall back to the topic's expected hours from Goal/Subject.
+    let hrsVal;
+    (function(){
+      const f = parseTimeToMinutes(t.fromTime);
+      const to = parseTimeToMinutes(t.toTime);
+      if(f !== null && to !== null && to > f){
+        hrsVal = Math.round(((to - f) / 60) * 100) / 100;
+      } else {
+        hrsVal = dpGetTaskHours(t);
+      }
+    })();
     const hrsStr = (Math.round(hrsVal*100)%100===0) ? String(Math.round(hrsVal)) : String(hrsVal);
-    const hoursCell = '<div style="display:flex;align-items:center;padding:0 4px"><span style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap" title="Expected hours — from Goal (priority) or from Subjects">'+hrsStr+'h</span></div>';
+    const hoursCell = '<div style="display:flex;align-items:center;padding:0 4px"><span style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap" title="Allocated hours for this session (based on the from/to time range)">'+hrsStr+'h</span></div>';
     // Current status pulled from Subjects section using its own logic (moved to the right)
     const curStatus = (typeof t.ci==='number' && typeof t.ti==='number' && t.sub)
       ? getTopicStudyStatus(t.sub, t.ci, t.ti) : 'Not Started';
@@ -4949,7 +4991,8 @@ function wpMirrorAddToDaily(sub, ci, ti, dateStr, opts){
       topicName, chapterName: ch.name,
       fromTime:(opts&&opts.fromTime)||'', toTime:(opts&&opts.toTime)||'',
       pct: (opts&&parseInt(opts.pct))||0,
-      addedFromWeeklyPlan:true
+      addedFromWeeklyPlan:true,
+      manuallyAdded: true
     };
     tasks.push(task);
     dpSetTasks(dateStr, tasks);
@@ -5012,7 +5055,8 @@ function confirmDailyPlanTask(){
     sub, ci, ti,
     topicName, chapterName: ch.name,
     fromTime: from, toTime: to,
-    pct: 0
+    pct: 0,
+    manuallyAdded: true
   };
   const tasks=dpGetTasks(ds); tasks.push(task); dpSetTasks(ds,tasks);
   dpMirrorAddToWeekly(task, ds);
@@ -5351,6 +5395,32 @@ function calOpenTimePicker(kind, idOrIdx, field, currentVal){
    - Only tasks flagged autoBacklogPlanned=true are wiped/regenerated; user's
      manual tasks are preserved.
 ═══════════════════════════════════ */
+/* v16 — a task is "manual" (must be preserved during auto-replan) unless autoBacklogPlanned=true. */
+function dpTaskIsManual(t){
+  if(!t) return false;
+  if(t.autoBacklogPlanned) return false;
+  return true;
+}
+/* v17 — Total sleep/commitment hours per specific weekday (from wp-state) — ground truth from Calendar. */
+function getCommitmentHoursForDate(dateStr){
+  try {
+    const wp = getWPState();
+    const dow = new Date(dateStr+'T00:00:00').getDay();
+    let total = 0;
+    (wp.commitments||[]).forEach(c => {
+      if((c.days||[]).includes(dow)) total += getCommitmentDurationHours(c);
+    });
+    // Add ad-hoc commitments for that specific date
+    getAdhocForDate(dateStr).forEach(c => { total += getCommitmentDurationHours(c); });
+    return total;
+  } catch(e) { return 0; }
+}
+/* v17 — Free hours for a date as shown in the Calendar UI = 24 − all commitments (regular + ad-hoc).
+   This is the HARD upper bound the auto-planner must never exceed. */
+function getCalendarFreeHoursForDate(dateStr){
+  const commitHours = getCommitmentHoursForDate(dateStr);
+  return Math.max(0, Math.round((24 - commitHours) * 100) / 100);
+}
 /* v14 — Compute minutes blocked by EXISTING (non-auto-backlog) Daily Plan tasks for a specific date.
    Used during replanning so backlog auto-planning respects already-planned manual tasks. */
 function buildExistingDailyPlanBlockedMinutes(dateStr, bounds){
@@ -5358,7 +5428,7 @@ function buildExistingDailyPlanBlockedMinutes(dateStr, bounds){
   try {
     const tasks = dpGetTasks(dateStr);
     tasks.forEach(t => {
-      if(t.autoBacklogPlanned) return; // These will be wiped, so ignore
+      if(!dpTaskIsManual(t)) return;
       const from = parseTimeToMinutes(t.fromTime);
       if(from === null) return;
       let end = parseTimeToMinutes(t.toTime);
@@ -5381,7 +5451,7 @@ function computeExistingPlannedHours(dateStr){
     const tasks = dpGetTasks(dateStr);
     let total = 0;
     tasks.forEach(t => {
-      if(t.autoBacklogPlanned) return;
+      if(!dpTaskIsManual(t)) return;
       const from = parseTimeToMinutes(t.fromTime);
       const to = parseTimeToMinutes(t.toTime);
       if(from !== null && to !== null && to > from){
@@ -5392,6 +5462,41 @@ function computeExistingPlannedHours(dateStr){
     });
     return total;
   } catch(e){ return 0; }
+}
+/* v15 — IST-aware: return slot minutes that are already in the past today.
+   Uses the browser's local time (IST for Chennai). Includes a small buffer
+   so we don't schedule anything starting in the next 30 minutes. */
+function buildPastMinutesForToday(dateStr, bounds){
+  const blocked = new Set();
+  try{
+    const now = new Date();
+    if(dateStr !== toDateKey(now)) return blocked;
+    const currentMinute = now.getHours() * 60 + now.getMinutes();
+    // 30-min buffer so we don't try to fit a task starting in a few minutes.
+    const cutoff = currentMinute + DAILY_SLOT_MINUTES;
+    for(let m = bounds.minMinute; m < cutoff && m < bounds.maxMinute; m += DAILY_SLOT_MINUTES){
+      blocked.add(m);
+    }
+  }catch(e){ console.error('buildPastMinutesForToday', e); }
+  return blocked;
+}
+/* v15 — Free hours REMAINING for today (from now until end of day), excluding
+   calendar-blocked slots and any time already in the past. Returns null when
+   dateStr is not today. */
+function computeRemainingFreeHoursForToday(dateStr, bounds){
+  try{
+    const now = new Date();
+    if(dateStr !== toDateKey(now)) return null;
+    const currentMinute = now.getHours() * 60 + now.getMinutes();
+    const cutoff = currentMinute + DAILY_SLOT_MINUTES;
+    const calendarBlocked = buildBlockedMinuteSet(dateStr, bounds);
+    const allMinutes = buildTimelineMinuteList(bounds);
+    let slots = 0;
+    allMinutes.forEach(mm => {
+      if(mm >= cutoff && !calendarBlocked.has(mm)) slots++;
+    });
+    return (slots * DAILY_SLOT_MINUTES) / 60;
+  }catch(e){ return null; }
 }
 function minutesToHHMM(mins){
   const h = Math.floor(mins/60), m = mins%60;
@@ -5407,10 +5512,10 @@ function refreshPlanFromBacklogs(){
     const dateKeys = [];
     for(let i=0;i<7;i++){ const d=new Date(weekStart); d.setDate(d.getDate()+i); dateKeys.push(toDateKey(d)); }
 
-    // 2. Wipe previous auto-planned entries from Daily Plan for these dates
+    // 2. Wipe previous auto-planned entries — only autoBacklogPlanned=true; keep manual.
     dateKeys.forEach(ds=>{
       const tasks = dpGetTasks(ds);
-      const filtered = tasks.filter(t=>!t.autoBacklogPlanned);
+      const filtered = tasks.filter(t=>dpTaskIsManual(t));
       if(filtered.length!==tasks.length) dpSetTasks(ds, filtered);
     });
 
@@ -5457,25 +5562,60 @@ function refreshPlanFromBacklogs(){
     let plannedCount = 0;
 
     plan.days.forEach((day)=>{
-      // v14 — Reduce day.net by hours already consumed by existing (non-auto-backlog) Daily Plan tasks
+      /* v17 — Hard-cap day.net at the Calendar's 24 − Σ(all commitments) value.
+         This is the exact number the user sees in "Free Hours per Day" — the auto-planner
+         must never exceed it.
+
+         Formula:
+           calendarFree   = 24 − regular commitments − ad-hoc commitments for that date
+           existingHours  = hours consumed by manual Daily Plan tasks on that date
+           pastHours (today only) = hours already elapsed in IST that are unusable
+           day.net        = max(0, calendarFree − existingHours − pastHours) */
+      const bounds = getTimelineBounds(day.date);
+      const isTodayIST = day.date === toDateKey(new Date());
+      const calendarFree = getCalendarFreeHoursForDate(day.date);
       const existingHours = computeExistingPlannedHours(day.date);
       day.existingPlannedHours = Math.round(existingHours * 100) / 100;
-      day.net = Math.max(0, Math.round((day.net - existingHours) * 100) / 100);
+      let pastHours = 0;
+      if(isTodayIST){
+        try {
+          const now = new Date();
+          const currentMinute = now.getHours()*60 + now.getMinutes();
+          const cutoff = currentMinute + DAILY_SLOT_MINUTES; // 30-min buffer
+          // Count elapsed unblocked hours that are wasted because they're already past
+          const calendarBlocked = buildBlockedMinuteSet(day.date, bounds);
+          for(let m=0; m<cutoff && m<24*60; m += DAILY_SLOT_MINUTES){
+            if(!calendarBlocked.has(m)) pastHours += DAILY_SLOT_MINUTES/60;
+          }
+        } catch(e){}
+      }
+      day.grossFree = calendarFree;
+      day.pastHoursLost = Math.round(pastHours * 100) / 100;
+      day.net = Math.max(0, Math.round((calendarFree - existingHours - pastHours) * 100) / 100);
       if(day.isPast || day.net<=0){
         day.sessions = [];
-        day.note = day.net<=0
-          ? (existingHours>0 ? ('No free time — '+day.existingPlannedHours+'h already planned') : 'No study time available')
-          : 'Past day';
+        if(isTodayIST && day.net<=0){
+          day.note = existingHours>0
+            ? 'Today has ended — sleep or planned tasks fill remaining hours'
+            : 'Too late in the day — planning starts from tomorrow';
+        } else {
+          day.note = day.net<=0
+            ? (existingHours>0 ? ('No free time — '+day.existingPlannedHours+'h already planned') : 'No study time available')
+            : 'Past day';
+        }
         return;
       }
-      const bounds = getTimelineBounds(day.date);
-      // v14 — Merge calendar-blocked minutes with minutes occupied by existing manual/goal tasks
+      // v17 — Blocked minutes: calendar + existing manual tasks + past minutes (today only)
       const calendarBlocked = buildBlockedMinuteSet(day.date, bounds);
       const existingBlocked = buildExistingDailyPlanBlockedMinutes(day.date, bounds);
-      const blocked = new Set([...calendarBlocked, ...existingBlocked]);
+      const pastBlocked     = buildPastMinutesForToday(day.date, bounds);
+      const blocked = new Set([...calendarBlocked, ...existingBlocked, ...pastBlocked]);
       const allMinutes = buildTimelineMinuteList(bounds);
       const occupied = {};
       const sessions = [];
+      /* v17 — Hard cap: never place more slots than day.net allows on this date. */
+      const dayCapSlots = Math.max(0, Math.floor(day.net * 60 / DAILY_SLOT_MINUTES));
+      let slotsPlacedThisDay = 0;
 
       // Skip past topics that are already fully planned
       while(topicIdx < backlogs.length && backlogs[topicIdx].remainingSlots <= 0) topicIdx++;
@@ -5484,6 +5624,7 @@ function refreshPlanFromBacklogs(){
       let dayProgress = true;
       while(dayProgress && topicIdx < backlogs.length){
         dayProgress = false;
+        if(slotsPlacedThisDay >= dayCapSlots) break; // v17 — enforce the cap
         const b = backlogs[topicIdx];
 
         // Find the earliest available slot minute in this day
@@ -5504,8 +5645,13 @@ function refreshPlanFromBacklogs(){
         }
         if(gapLen<1) break;
 
-        // Take min(remainingSlots, gapLen) — this is the key partial-fit logic
-        const takeSlots = Math.min(b.remainingSlots, gapLen);
+        // v17 — Also cap gapLen by remaining day budget so we never overrun day.net
+        const remainingDaySlots = dayCapSlots - slotsPlacedThisDay;
+        const cappedGap = Math.min(gapLen, remainingDaySlots);
+        if(cappedGap < 1) break;
+
+        // Take min(remainingSlots, cappedGap)
+        const takeSlots = Math.min(b.remainingSlots, cappedGap);
         const chosen = [];
         for(let k=0; k<takeSlots; k++){
           const mm = allMinutes[startPos + k];
@@ -5559,6 +5705,7 @@ function refreshPlanFromBacklogs(){
         }catch(e){}
 
         b.remainingSlots -= takeSlots;
+        slotsPlacedThisDay += takeSlots; // v17
         plannedCount++;
         dayProgress = true;
 
