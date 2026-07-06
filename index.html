@@ -4494,6 +4494,52 @@ function dpShiftDay(n){
   renderDailyPlan();
 }
 function dpTaskIsDone(t){ return (parseInt(t.pct)||0)>=100; }
+/* v13 — Resolve hours required for a Daily Plan task
+   Priority: 1) Goal expected hours  2) Subject planned hours  3) Default 0.5h */
+function dpGetTaskHours(t){
+  try{
+    if(typeof t.ci==='number' && typeof t.ti==='number' && t.sub){
+      const goals = getGoals();
+      const key = t.sub+'-'+t.ci;
+      if(t.source==='goal' && t.goalId){
+        const g = goals.find(x=>x.id===t.goalId);
+        if(g){
+          const gh = getGoalTopicExpectedHours(g, t.sub, t.ci, t.ti);
+          if(gh !== undefined && gh !== null && !isNaN(gh)) return gh;
+        }
+      }
+      for(const g of goals){
+        if(g && g.scope && g.scope[key] && g.scope[key][t.ti]){
+          const gh = getGoalTopicExpectedHours(g, t.sub, t.ci, t.ti);
+          if(gh !== undefined && gh !== null && !isNaN(gh)) return gh;
+        }
+      }
+    }
+  }catch(e){}
+  try{
+    const sh = getSubjectEstimatedHours(t.sub, t.ci, t.ti);
+    if(sh !== undefined && sh !== null && !isNaN(sh)) return sh;
+  }catch(e){}
+  try{ return getSubjectDefaultHours(t.sub, t.ci, t.ti); }catch(e){}
+  return 0.5;
+}
+/* v13 — Find goal name for a task (explicit goalId first, then any goal scope containing this topic) */
+function dpResolveGoalNameForTask(t){
+  try{
+    const goals = getGoals();
+    if(t.source==='goal' && t.goalId){
+      const g = goals.find(x=>x.id===t.goalId);
+      if(g && g.name) return g.name;
+    }
+    if(typeof t.ci==='number' && typeof t.ti==='number' && t.sub){
+      const key = t.sub+'-'+t.ci;
+      for(const g of goals){
+        if(g && g.scope && g.scope[key] && g.scope[key][t.ti]) return g.name || '';
+      }
+    }
+  }catch(e){}
+  return '';
+}
 function renderDailyPlan(){
   const ds=document.getElementById('dp-picker').value||dpTodayStr();
   const tasks=dpGetTasks(ds).slice().sort(dpSortByTime);
@@ -4513,7 +4559,7 @@ function renderDailyPlan(){
     return;
   }
   html += '<div class="daily-list-wrap">'
-    + '<div class="daily-list-head" style="grid-template-columns:130px 100px 1fr 200px 130px 90px"><span>Time</span><span>Subject</span><span>Task</span><span></span><span>Current Status</span><span></span></div>';
+    + '<div class="daily-list-head" style="grid-template-columns:110px 110px 1fr 70px 180px 120px 80px"><span>Time</span><span>Subject</span><span>Task</span><span>Hours</span><span></span><span>Current Status</span><span></span></div>';
   tasks.forEach(t=>{
     const col=SUBJ_COLOR[t.sub]||'var(--accent)';
     const isDone=dpTaskIsDone(t);
@@ -4522,15 +4568,8 @@ function renderDailyPlan(){
       ? '<div style="font-size:12px;color:var(--text);font-weight:600;white-space:nowrap;line-height:1.1;padding:0 4px">'+dpEscape(range)+'</div>'
       : '<div style="font-size:11px;color:var(--text3);font-style:italic;padding:0 4px">No time set</div>';
     const subjLabel = t.sub ? (t.sub.charAt(0).toUpperCase()+t.sub.slice(1)) : '';
-    // If the task came from a Goal, look up the goal name so we can show it above the subject
-    let goalNameForSubject = '';
-    if(t.source==='goal' && t.goalId){
-      try{
-        const _allGoals = getGoals();
-        const _g = _allGoals.find(x=>x.id===t.goalId);
-        if(_g && _g.name) goalNameForSubject = _g.name;
-      }catch(e){}
-    }
+    // v13 — Resolve goal name whether explicitly linked OR any goal that contains this topic in scope
+    const goalNameForSubject = dpResolveGoalNameForTask(t);
     // Subject column: for goal-source tasks show "GoalName" (small) above the subject chip.
     let subjectCell;
     if(subjLabel){
@@ -4545,18 +4584,23 @@ function renderDailyPlan(){
     } else {
       subjectCell = '<div></div>';
     }
-    const sourceTag = t.source==='goal' ? 'Goal' : 'Manual';
-    // Task subline no longer duplicates subject (chapter · Manual/Goal only)
+    // v13 — Goal tag when task is in any goal's scope; Manual otherwise
+    const sourceTag = goalNameForSubject ? 'Goal' : 'Manual';
     const subLine = [t.chapterName, sourceTag].filter(Boolean).map(dpEscape).join(' · ');
+    // v13 — Hours cell (Goal expected hours preferred, otherwise Subject hours)
+    const hrsVal = dpGetTaskHours(t);
+    const hrsStr = (Math.round(hrsVal*100)%100===0) ? String(Math.round(hrsVal)) : String(hrsVal);
+    const hoursCell = '<div style="display:flex;align-items:center;padding:0 4px"><span style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap" title="Expected hours — from Goal (priority) or from Subjects">'+hrsStr+'h</span></div>';
     // Current status pulled from Subjects section using its own logic (moved to the right)
     const curStatus = (typeof t.ci==='number' && typeof t.ti==='number' && t.sub)
       ? getTopicStudyStatus(t.sub, t.ci, t.ti) : 'Not Started';
     const curStatusClass = curStatus==='Completed Once' ? 'b-done' : (curStatus.startsWith('Revision') ? 'b-rev' : 'b-not');
     const currentStatusCell = '<div style="display:flex;align-items:center;padding:0 4px"><span class="badge '+curStatusClass+'" title="Auto-calculated from Subjects — completed sessions of this topic">'+dpEscape(curStatus)+'</span></div>';
-    html += '<div class="daily-list-row '+(isDone?'done':'')+'" style="grid-template-columns:130px 100px 1fr 200px 130px 90px;border-left:3px solid '+col+'">'
+    html += '<div class="daily-list-row '+(isDone?'done':'')+'" style="grid-template-columns:110px 110px 1fr 70px 180px 120px 80px;border-left:3px solid '+col+'">'
       + timeCell
       + subjectCell
       + '<div><div class="daily-list-title">'+dpEscape(t.topicName||'Task')+'</div><div class="daily-list-sub">'+subLine+'</div></div>'
+      + hoursCell
       + '<div style="display:flex;align-items:center;gap:6px;justify-content:flex-start">'
         + '<input type="number" min="0" max="100" value="'+(parseInt(t.pct)||0)+'" id="dp-pct-'+t.id+'" oninput="dpOnPctChange(\''+t.id+'\')" style="width:64px;border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:\'DM Sans\',sans-serif;text-align:center;background:var(--surface);color:var(--text)">'
         + '<span style="font-size:11px;color:var(--text3)">%</span>'
@@ -5294,14 +5338,18 @@ function calOpenTimePicker(kind, idOrIdx, field, currentVal){
 }
 
 /* ═══════════════════════════════════
-   AUTO-PLAN BACKLOGS
-   Reads current backlogs (from Backlogs page), calculates available time per day
-   from the Calendar (regular + ad-hoc commitments), and distributes topics across
-   today + next 6 days. Assigns to BOTH Weekly Plan (cache) and Daily Plan (tasks
-   with fromTime/toTime).
-   - Previous auto-planned entries are cleared first, so re-clicking regenerates.
-   - User's manual Daily Plan tasks are preserved (only tasks with
-     autoBacklogPlanned=true are removed).
+   AUTO-PLAN BACKLOGS  (v12 — with topic-splitting across days)
+   Reads current backlogs, calculates available time per day from the Calendar
+   (regular + ad-hoc commitments), and distributes topics across today + next 6 days.
+   Assigns to BOTH Weekly Plan (cache) and Daily Plan (tasks with fromTime/toTime).
+
+   Key fix over v11:
+   - If a topic needs more hours than are free on today, the remaining hours are
+     carried to the next day (and next) with clear "Part 1 of N", "Part 2 of N" labels.
+   - Splits also happen within a day if the free time is broken into two gaps by
+     commitments (e.g. school 9–3 + tuition 5–7 → gaps 3–5 pm and 7 pm onwards).
+   - Only tasks flagged autoBacklogPlanned=true are wiped/regenerated; user's
+     manual tasks are preserved.
 ═══════════════════════════════════ */
 function minutesToHHMM(mins){
   const h = Math.floor(mins/60), m = mins%60;
@@ -5311,24 +5359,23 @@ function refreshPlanFromBacklogs(){
   const btnWP = document.getElementById('refresh-plan-btn');
   if(btnWP){ btnWP.textContent='⟳ Planning...'; btnWP.disabled=true; }
   try{
-    // 1. Compute date range: today + next 6 days
+    // 1. Date range: today + next 6 days
     const today = new Date(); today.setHours(0,0,0,0);
     const weekStart = new Date(today);
     const dateKeys = [];
     for(let i=0;i<7;i++){ const d=new Date(weekStart); d.setDate(d.getDate()+i); dateKeys.push(toDateKey(d)); }
 
-    // 2. Wipe any previous auto-backlog tasks from Daily Plan for these dates
+    // 2. Wipe previous auto-planned entries from Daily Plan for these dates
     dateKeys.forEach(ds=>{
       const tasks = dpGetTasks(ds);
       const filtered = tasks.filter(t=>!t.autoBacklogPlanned);
       if(filtered.length!==tasks.length) dpSetTasks(ds, filtered);
     });
 
-    // 3. Get backlogs and sort by priority
+    // 3. Fetch backlogs
     const backlogs = getBacklogTopics();
     if(!backlogs.length){
       showToast('No backlogs to plan');
-      // Still refresh the weekly view so an empty plan is shown
       const plan = buildBlankWeekPlan(weekStart);
       plan.days.forEach(d=>{ d.note = d.net<=0?'No study time available':'No backlogs'; });
       const activeGoal = (getGoals().find(g=>g.id===getActiveGoalId('planner')))||getGoals()[0];
@@ -5341,6 +5388,8 @@ function refreshPlanFromBacklogs(){
       refreshDailyPlanIfOpen();
       return;
     }
+
+    // 4. Priority sort: School/Tuition > High-weight > alphabetical
     backlogs.sort((a,b)=>{
       const asch = (a.inSchool||a.inTuition) ? 1 : 0;
       const bsch = (b.inSchool||b.inTuition) ? 1 : 0;
@@ -5351,12 +5400,21 @@ function refreshPlanFromBacklogs(){
       return a.sub.localeCompare(b.sub);
     });
 
-    // 4. Build plan and assign topics
+    // 5. Compute total slots each topic needs (based on expected hours)
+    backlogs.forEach(b=>{
+      const expected = Math.max(0.5, parseFloat(getSubjectDefaultHours(b.sub, b.ci, b.ti))||0.5);
+      b.expectedHours = expected;
+      b.totalSlots = Math.max(1, Math.round((expected*60)/DAILY_SLOT_MINUTES));
+      b.remainingSlots = b.totalSlots;
+      b.partsPlanned = 0;
+    });
+
+    // 6. Build plan
     const plan = buildBlankWeekPlan(weekStart);
     let topicIdx = 0;
     let plannedCount = 0;
 
-    plan.days.forEach((day,i)=>{
+    plan.days.forEach((day)=>{
       if(day.isPast || day.net<=0){
         day.sessions = [];
         day.note = day.net<=0 ? 'No study time available' : 'Past day';
@@ -5367,42 +5425,69 @@ function refreshPlanFromBacklogs(){
       const allMinutes = buildTimelineMinuteList(bounds);
       const occupied = {};
       const sessions = [];
-      let hoursLeft = day.net;
 
-      while(hoursLeft>=0.5 && topicIdx<backlogs.length){
+      // Skip past topics that are already fully planned
+      while(topicIdx < backlogs.length && backlogs[topicIdx].remainingSlots <= 0) topicIdx++;
+
+      // Fill this day — allow each topic to take multiple contiguous gaps if needed
+      let dayProgress = true;
+      while(dayProgress && topicIdx < backlogs.length){
+        dayProgress = false;
         const b = backlogs[topicIdx];
-        const expected = Math.max(0.5, parseFloat(getSubjectDefaultHours(b.sub, b.ci, b.ti))||0.5);
-        const dur = Math.min(expected, hoursLeft);
-        if(dur<0.5){ topicIdx++; continue; }
-        const slotCount = Math.max(1, Math.round((dur*60)/DAILY_SLOT_MINUTES));
 
-        // Find first slot minute that's not blocked or occupied
+        // Find the earliest available slot minute in this day
         let startMinute = -1;
         for(let mi=0; mi<allMinutes.length; mi++){
           const mm = allMinutes[mi];
           if(!blocked.has(mm) && !occupied[mm]){ startMinute = mm; break; }
         }
-        if(startMinute<0) break;
+        if(startMinute<0) break; // day is completely full/blocked
 
-        const assigned = allocateSlotsFromMinute(allMinutes, blocked, occupied, startMinute, slotCount);
-        if(!assigned || assigned.length<slotCount) break;
+        // Count how many contiguous free slots are available starting from startMinute
+        let gapLen = 0;
+        const startPos = allMinutes.indexOf(startMinute);
+        for(let mj=startPos; mj<allMinutes.length; mj++){
+          const mm = allMinutes[mj];
+          if(blocked.has(mm) || occupied[mm]) break;
+          gapLen++;
+        }
+        if(gapLen<1) break;
 
-        const fromTime = minutesToHHMM(assigned[0]);
-        const toTime   = minutesToHHMM(assigned[assigned.length-1] + DAILY_SLOT_MINUTES);
+        // Take min(remainingSlots, gapLen) — this is the key partial-fit logic
+        const takeSlots = Math.min(b.remainingSlots, gapLen);
+        const chosen = [];
+        for(let k=0; k<takeSlots; k++){
+          const mm = allMinutes[startPos + k];
+          chosen.push(mm);
+          occupied[mm] = true;
+        }
+
+        const durH = (takeSlots * DAILY_SLOT_MINUTES) / 60;
+        const fromTime = minutesToHHMM(chosen[0]);
+        const toTime   = minutesToHHMM(chosen[chosen.length-1] + DAILY_SLOT_MINUTES);
+
+        b.partsPlanned++;
+        const isSplit = (b.totalSlots > takeSlots) || (b.partsPlanned > 1) || (b.remainingSlots > takeSlots);
+        // Estimate total parts (rough guess: how many parts this topic will end up with).
+        // We can only know the final count after all days processed, so use running count for now.
+        const partSuffix = isSplit ? ' (Part '+b.partsPlanned+')' : '';
+
+        const displayTopicName = b.topicName + partSuffix;
 
         // Weekly Plan session
         const session = {
           subject: b.sub, ci: b.ci, ti: b.ti,
           label: b.sub.charAt(0).toUpperCase()+b.sub.slice(1),
-          chName: b.chapterName, topicName: b.topicName,
-          goalHours: dur, subjectHours: getSubjectEstimatedHours(b.sub, b.ci, b.ti),
-          task: b.topicName + ' — auto-planned from backlog',
-          duration: dur+'h', type: 'new', lastPct: 0,
+          chName: b.chapterName, topicName: displayTopicName,
+          goalHours: durH, subjectHours: getSubjectEstimatedHours(b.sub, b.ci, b.ti),
+          task: displayTopicName + ' — auto-planned from backlog',
+          duration: durH+'h', type: 'new', lastPct: 0,
           fromTime, toTime,
-          autoBacklogPlanned: true
+          autoBacklogPlanned: true,
+          _splitOfTopicKey: b.sub+'-'+b.ci+'-'+b.ti,
+          _partNumber: b.partsPlanned
         };
         sessions.push(session);
-        assigned.forEach(m=>{ occupied[m]=true; });
 
         // Daily Plan task
         try{
@@ -5412,23 +5497,75 @@ function refreshPlanFromBacklogs(){
             source: 'subject',
             goalId: '',
             sub: b.sub, ci: b.ci, ti: b.ti,
-            topicName: b.topicName, chapterName: b.chapterName,
+            topicName: displayTopicName, chapterName: b.chapterName,
             fromTime, toTime,
             pct: 0,
-            autoBacklogPlanned: true
+            autoBacklogPlanned: true,
+            _splitOfTopicKey: b.sub+'-'+b.ci+'-'+b.ti,
+            _partNumber: b.partsPlanned
           });
           dpSetTasks(day.date, tasks);
         }catch(e){}
 
-        hoursLeft -= dur;
-        topicIdx++;
+        b.remainingSlots -= takeSlots;
         plannedCount++;
+        dayProgress = true;
+
+        // If topic is fully done, move to next topic (but stay on same day)
+        if(b.remainingSlots <= 0) topicIdx++;
+        // else: same topic continues on next iteration; either finds another gap
+        // in same day, or breaks and moves to next day
       }
+
       day.sessions = sessions;
-      day.note = sessions.length ? (sessions.length+' backlog task'+(sessions.length>1?'s':'')+' planned') : 'Rest — no backlogs assigned';
+      const uniqueTopics = new Set(sessions.map(s=>s._splitOfTopicKey));
+      day.note = sessions.length
+        ? (uniqueTopics.size+' topic'+(uniqueTopics.size>1?'s':'')+' · '+sessions.length+' block'+(sessions.length>1?'s':''))
+        : 'Rest — no backlogs assigned';
     });
 
-    // 5. Save plan cache — clear any other cache entries for this week first
+    // 7. Post-process: patch "Part N" labels to include total parts (Part 1 of 3)
+    const topicPartCounts = {};
+    plan.days.forEach(day=>{
+      (day.sessions||[]).forEach(s=>{
+        if(!s._splitOfTopicKey) return;
+        topicPartCounts[s._splitOfTopicKey] = (topicPartCounts[s._splitOfTopicKey]||0) + 1;
+      });
+    });
+    plan.days.forEach(day=>{
+      (day.sessions||[]).forEach(s=>{
+        const total = topicPartCounts[s._splitOfTopicKey];
+        if(total && total>1 && s._partNumber){
+          const clean = s.topicName.replace(/\s*\(Part \d+\)$/,'');
+          s.topicName = clean + ' (Part '+s._partNumber+' of '+total+')';
+          s.task = s.topicName + ' — auto-planned from backlog';
+        } else if(total===1){
+          // single part → strip the "(Part 1)" suffix
+          s.topicName = s.topicName.replace(/\s*\(Part \d+\)$/,'');
+          s.task = s.topicName + ' — auto-planned from backlog';
+        }
+      });
+    });
+    // Also patch Daily Plan tasks
+    dateKeys.forEach(ds=>{
+      const tasks = dpGetTasks(ds);
+      let changed = false;
+      tasks.forEach(t=>{
+        if(!t.autoBacklogPlanned || !t._splitOfTopicKey) return;
+        const total = topicPartCounts[t._splitOfTopicKey];
+        if(total && total>1 && t._partNumber){
+          const clean = t.topicName.replace(/\s*\(Part \d+\)$/,'').replace(/\s*\(Part \d+ of \d+\)$/,'');
+          t.topicName = clean + ' (Part '+t._partNumber+' of '+total+')';
+          changed = true;
+        } else if(total===1){
+          t.topicName = t.topicName.replace(/\s*\(Part \d+\)$/,'').replace(/\s*\(Part \d+ of \d+\)$/,'');
+          changed = true;
+        }
+      });
+      if(changed) dpSetTasks(ds, tasks);
+    });
+
+    // 8. Save plan cache
     const activeGoal = (getGoals().find(g=>g.id===getActiveGoalId('planner')))||getGoals()[0];
     const weekKeyStr = toDateKey(weekStart);
     const cache = getWeekPlanCache();
@@ -5449,7 +5586,7 @@ function refreshPlanFromBacklogs(){
     };
     saveWeekPlanCache(cache);
 
-    // 6. Refresh visible views
+    // 9. Refresh visible views
     const weeklyPage = document.getElementById('page-weekly');
     if(weeklyPage && !weeklyPage.classList.contains('hidden')){
       const meta = cache[cacheKey].meta;
@@ -5457,9 +5594,14 @@ function refreshPlanFromBacklogs(){
     }
     refreshDailyPlanIfOpen();
 
-    const remaining = backlogs.length - topicIdx;
-    const msg = '✓ '+plannedCount+' backlog task'+(plannedCount!==1?'s':'')+' auto-planned across today + next 6 days'
-      + (remaining>0 ? ' — '+remaining+' left over (not enough time)' : '');
+    // 10. Summary
+    const fullyPlanned = backlogs.filter(b=>b.remainingSlots<=0).length;
+    const partiallyPlanned = backlogs.filter(b=>b.remainingSlots>0 && b.partsPlanned>0).length;
+    const notPlanned = backlogs.filter(b=>b.partsPlanned===0).length;
+    let msg = '✓ '+plannedCount+' block'+(plannedCount!==1?'s':'')+' auto-planned';
+    if(fullyPlanned) msg += ' · '+fullyPlanned+' topic'+(fullyPlanned!==1?'s':'')+' fully covered';
+    if(partiallyPlanned) msg += ' · '+partiallyPlanned+' partial';
+    if(notPlanned) msg += ' · '+notPlanned+' left over (not enough time)';
     showToast(msg);
   }catch(e){
     console.error('refreshPlanFromBacklogs error', e);
