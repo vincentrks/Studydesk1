@@ -26,7 +26,7 @@
   --phy-l: #DAE8F8;
   --che: #6B2680;
   --che-l: #EDD8F5;
-  --mat: #B5420A;
+  --mat: #B5420A; --bio:#16a34a;
   --mat-l: #FAE8DF;
   --high: #C13B1B;
   --high-l: #FAEAE5;
@@ -691,6 +691,10 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
     <button class="sb-btn" id="sb-mat" onclick="nav('maths')">
       <span class="sb-dot" style="background:var(--mat)"></span>Maths
       <span class="sb-count" id="sc-maths">0/13</span>
+    </button>
+    <button class="sb-btn" id="sb-bio" onclick="nav('biology')">
+      <span class="sb-dot" style="background:var(--bio)"></span>Biology
+      <span class="sb-count" id="sc-biology">0/16</span>
     </button>
     <button class="sb-btn" id="sb-tasks" onclick="nav('tasks')">
       <span class="sb-dot" style="background:#8B6914"></span>Assignments & Homeworks
@@ -1630,10 +1634,29 @@ const CHAPTERS = {
     {name:"Three Dimensional Geometry",weight:"high",topics:["Direction cosines & ratios","Equation of line","Equation of plane","Distance from plane/line"]},
     {name:"Linear Programming",weight:"med",topics:["Graphical method","Feasible region","Maximise/minimise objective"]},
     {name:"Probability",weight:"high",topics:["Conditional probability","Bayes' theorem","Binomial distribution","Mean & variance"]}
+  ],
+  biology:[
+    {name:"Reproduction in Organisms",weight:"med",topics:["Asexual reproduction","Sexual reproduction","Life cycle patterns","Reproductive strategies"]},
+    {name:"Sexual Reproduction in Flowering Plants",weight:"high",topics:["Flower structure","Pollination","Double fertilization","Seed and fruit development"]},
+    {name:"Human Reproduction",weight:"high",topics:["Male reproductive system","Female reproductive system","Gametogenesis","Pregnancy and embryonic development"]},
+    {name:"Reproductive Health",weight:"med",topics:["Contraceptive methods","STDs","Infertility","Assisted reproductive technologies"]},
+    {name:"Principles of Inheritance and Variation",weight:"high",topics:["Mendelian inheritance","Chromosomal theory","Sex determination","Genetic disorders"]},
+    {name:"Molecular Basis of Inheritance",weight:"high",topics:["DNA structure","DNA replication","Genetic code","Human genome project"]},
+    {name:"Evolution",weight:"med",topics:["Origin of life","Darwinian theory","Hardy-Weinberg principle","Speciation"]},
+    {name:"Human Health and Disease",weight:"high",topics:["Immunity","AIDS","Cancer","Pathogens and diseases"]},
+    {name:"Strategies for Enhancement in Food Production",weight:"med",topics:["Plant breeding","Animal husbandry","Tissue culture","Single cell protein"]},
+    {name:"Microbes in Human Welfare",weight:"med",topics:["Industrial products","Sewage treatment","Biogas production","Biofertilizers"]},
+    {name:"Biotechnology: Principles and Processes",weight:"high",topics:["Genetic engineering tools","Recombinant DNA","PCR","Bioreactors"]},
+    {name:"Biotechnology and its Applications",weight:"high",topics:["GM crops","DNA fingerprinting","Gene therapy","Bioethics and biopatents"]},
+    {name:"Organisms and Populations",weight:"med",topics:["Habitat and niche","Population interactions","Adaptations","Population growth"]},
+    {name:"Ecosystem",weight:"high",topics:["Energy flow","Food chains and webs","Ecological pyramids","Nutrient cycling"]},
+    {name:"Biodiversity and Conservation",weight:"high",topics:["Levels of biodiversity","Biodiversity loss","Conservation strategies","Hotspots"]},
+    {name:"Environmental Issues",weight:"med",topics:["Air pollution","Water pollution","Ozone depletion","Waste management"]}
   ]
+
 };
 
-const SUBJ_COLOR={physics:'var(--phy)',chemistry:'var(--che)',maths:'var(--mat)'};
+const SUBJ_COLOR={physics:'var(--phy)',chemistry:'var(--che)',maths:'var(--mat)',biology:'var(--bio)'};
 const SUBJ_BG={physics:'var(--phy-l)',chemistry:'var(--che-l)',maths:'var(--mat-l)'};
 const SUBJ_ICON={physics:'⚡',chemistry:'⚗️',maths:'∑'};
 
@@ -1698,7 +1721,7 @@ let curSubject='physics';
 let curFilter='all';
 
 const PAGES=['dailyplan','weekly','calendar','backlogs','goals','tasks','subject'];
-const SUBJ_PAGES=['physics','chemistry','maths'];
+const SUBJ_PAGES=['physics','chemistry','maths','biology'];
 
 function nav(page){
   // Always hide all real pages first
@@ -1743,6 +1766,11 @@ function nav(page){
     document.getElementById('page-subject').classList.remove('hidden');
     activateBtn('maths');
     renderSubjectPage('maths');
+  } else if(page==='biology'){
+    curSubject='biology';
+    document.getElementById('page-subject').classList.remove('hidden');
+    activateBtn('biology');
+    renderSubjectPage('biology');
   } else if(page==='tasks'){
     curSubject='tasks';
     document.getElementById('page-tasks').classList.remove('hidden');
@@ -2148,7 +2176,7 @@ function generateAlerts(){
 ═══════════════════════════════════ */
 function renderSubjectPage(sub){
   curSubject=sub;
-  const SUBJ_COL_MAP={physics:'var(--phy)',chemistry:'var(--che)',maths:'var(--mat)'};
+  const SUBJ_COL_MAP={physics:'var(--phy)',chemistry:'var(--che)',maths:'var(--mat)',biology:'var(--bio)'};
   const col=SUBJ_COL_MAP[sub]||'var(--text)';
   const title=sub.charAt(0).toUpperCase()+sub.slice(1);
   document.getElementById('subj-page-title').textContent=title;
@@ -3710,7 +3738,7 @@ function renderGoalDetail(goalId){
   const m=getGoalMetrics(g);
   const status=goalStatusMeta(m.status);
   const SCOL={physics:'var(--phy)',chemistry:'var(--che)',maths:'var(--mat)'};
-  const sorted=[...m.topics].sort((a,b)=>(['physics','chemistry','maths'].indexOf(a.sub)-['physics','chemistry','maths'].indexOf(b.sub))||a.ci-b.ci||a.ti-b.ti);
+  const sorted=[...m.topics].sort((a,b)=>(['physics','chemistry','maths','biology'].indexOf(a.sub)-['physics','chemistry','maths','biology'].indexOf(b.sub))||a.ci-b.ci||a.ti-b.ti);
   let rows='';
   if(!sorted.length){
     rows = `<div class="goal-list-empty">No topics in scope yet.<br><small>Use "+ Add topics" to select the topics for this goal.</small></div>`;
@@ -4161,7 +4189,7 @@ function ensureTopicState(sub,ci,ti){
 }
 function renderSubjectPage(sub){
   curSubject=sub;
-  const titleMap = {physics:'Physics', chemistry:'Chemistry', maths:'Maths'};
+  const titleMap = {physics:'Physics', chemistry:'Chemistry', maths:'Maths', biology:'Biology'};
   document.getElementById('subj-page-title').textContent=titleMap[sub] || sub.toUpperCase();
   document.getElementById('subj-page-sub').textContent = `${CHAPTERS[sub].length} chapters · ${CHAPTERS[sub].reduce((a,ch)=>a+ch.topics.length,0)} topics`;
   document.getElementById('filter-row').style.display='flex';
